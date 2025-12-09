@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>UI Configurator</title>
+</head>
+
+<body>
+
+<header>
+    <h1>UI Configurator</h1>
+</header>
+
+<main id="layout">
+
+    <!-- Linke Control-Panel -->
+    <aside id="sidebar-left">
+        <h2>Konfiguration</h2>
+
+        <details open>
+            <summary>Komponente</summary>
+            <select id="component-select">
+                <option>Button</option>
+                <option>Karte</option>
+            </select>
+        </details>
+
+        <details open>
+            <summary>Eigenschaften</summary>
+            <!-- Slider, Inputs usw. -->
+        </details>
+
+        <details>
+            <summary>Design Tokens</summary>
+            <!-- Variablenverwaltung -->
+        </details>
+    </aside>
+
+    <!-- Mittelpunkt: Vorschau -->
+    <section id="center-preview">
+        <div id="preview-area"></div>
+    </section>
+
+    <!-- Rechtes Panel: Export / Aktionen -->
+    <aside id="sidebar-right">
+        <h2>Aktionen</h2>
+        <button>CSS Export</button>
+        <button>JSON Export</button>
+        <button>Reset</button>
+        <button>Undo</button>
+        <button>Redo</button>
+        <p id="contrast-warning"></p>
+    </aside>
+
+</main>
+
+</body>
+</html>
+
