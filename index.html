@@ -1,147 +1,301 @@
 <!DOCTYPE html>
 <html lang="de">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>UI Configurator</title>
 
     <style>
-        * {
-            box-sizing: border-box;
-        }
+      * {
+        box-sizing: border-box;
+      }
 
-        body {
-            margin: 0;
-            font-family: system-ui, sans-serif;
-            background: #e8e8e8;
-            color: #222;
-        }
+      body {
+        margin: 0;
+        font-family: system-ui, sans-serif;
+        background: #e8e8e8;
+        color: #222;
+      }
 
-        /* --- Layout: Drei-Spalten Grid --- */
-        #layout {
-            display: grid;
-            grid-template-columns: 260px 1fr 260px;
-            height: calc(100vh - 80px);
-            gap: 12px;
-            padding: 12px;
-        }
+      /* --- Layout: Drei-Spalten Grid --- */
+      #layout {
+        display: grid;
+        grid-template-columns: 260px 1fr 260px;
+        height: calc(100vh - 80px);
+        gap: 12px;
+        padding: 12px;
+      }
 
-        #sidebar-left,
-        #sidebar-right,
-        #center-preview {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
+      #sidebar-left,
+      #sidebar-right,
+      #center-preview {
+        background: white;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow-y: auto;
+      }
 
-        header {
-            background: white;
-            padding: 16px 24px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-            border-radius: 0 0 12px 12px;
-        }
+      header {
+        background: white;
+        padding: 16px 24px;
+        margin-bottom: 12px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 0 0 12px 12px;
+      }
 
-        header h1 {
-            margin: 0;
-        }
+      header h1 {
+        margin: 0;
+      }
 
-        details {
-            margin-bottom: 16px;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            background: white;
-        }
+      details {
+        margin-bottom: 16px;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: white;
+      }
 
-        summary {
-            font-weight: bold;
-            cursor: pointer;
-            padding: 4px 0;
-        }
+      summary {
+        font-weight: bold;
+        cursor: pointer;
+        padding: 4px 0;
+      }
 
-        #preview-area {
-            flex: 1;
-            border: 2px dashed #ccc;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: white;
-            min-height: 200px;
-            font-size: 18px;
-            color: #777;
-        }
+      #preview-area {
+        flex: 1;
+        border: 2px dashed #ccc;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: white;
+        min-height: 200px;
+        font-size: 18px;
+        color: #777;
+      }
 
-        #sidebar-right button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: none;
-            border-radius: 8px;
-            background: #4a78ff;
-            color: white;
-            font-size: 15px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
+      #sidebar-right button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border: none;
+        border-radius: 8px;
+        background: #4a78ff;
+        color: white;
+        font-size: 15px;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
 
-        #sidebar-right button:hover {
-            background: #335bef;
-        }
+      #sidebar-right button:hover {
+        background: #335bef;
+      }
 
-        #contrast-warning {
-            margin-top: auto;
-            padding: 8px;
-            font-size: 14px;
-            color: red;
-            min-height: 1.2em;
-        }
+      #contrast-warning {
+        margin-top: auto;
+        padding: 8px;
+        font-size: 14px;
+        color: red;
+        min-height: 1.2em;
+      }
     </style>
+  </head>
 
-</head>
+  <body>
+    <header>
+      <h1>UI Configurator</h1>
+    </header>
 
-<body>
-
-<header>
-    <h1>UI Configurator</h1>
-</header>
-
-<main id="layout">
-
-    <!-- Linke Control-Panel -->
-    <aside id="sidebar-left">
+    <main id="layout">
+      <!-- Linke Control-Panel -->
+      <aside id="sidebar-left">
         <h2>Configuration</h2>
 
         <details open>
-            <summary>Component</summary>
+          <summary>Component</summary>
+
+          <div class="comp-group">
+            <label for="component-select">Choose Component</label>
             <select id="component-select">
-                <option>Button</option>
-                <option>Map</option>
+              <option value="button">Button</option>
+              <option value="card">Card</option>
+              <option value="header">Header</option>
+              <option value="navigation">Navigation</option>
             </select>
+          </div>
+
+          <div class="comp-group">
+            <label for="component-variant">Variant / Style</label>
+            <select id="component-variant">
+              <option value="default">Default</option>
+              <option value="primary">Primary</option>
+              <option value="secondary">Secondary</option>
+              <option value="outlined">Outlined</option>
+            </select>
+          </div>
+
+          <div class="comp-group">
+            <label for="component-size">Size</label>
+            <select id="component-size">
+              <option value="small">Small</option>
+              <option value="medium" selected>Medium</option>
+              <option value="large">Large</option>
+            </select>
+          </div>
         </details>
 
         <details open>
-            <summary>Properties</summary>
-            <!-- Slider, Inputs usw. -->
+          <summary>Properties</summary>
+
+          <div class="prop-group">
+            <label for="prop-text">Label Text</label>
+            <input id="prop-text" type="text" placeholder="Button Text" />
+          </div>
+
+          <div class="prop-group">
+            <label for="prop-font-size">Font Size</label>
+            <input
+              id="prop-font-size"
+              type="range"
+              min="8"
+              max="48"
+              value="16"
+            />
+            <span class="value-display" id="font-size-value">16px</span>
+          </div>
+
+          <div class="prop-group">
+            <label for="prop-padding">Padding</label>
+            <input id="prop-padding" type="range" min="0" max="40" value="10" />
+            <span class="value-display" id="padding-value">10px</span>
+          </div>
+
+          <div class="prop-group">
+            <label for="prop-radius">Border Radius</label>
+            <input id="prop-radius" type="range" min="0" max="50" value="8" />
+            <span class="value-display" id="radius-value">8px</span>
+          </div>
+
+          <div class="prop-group">
+            <label for="prop-font-family">Font Family</label>
+            <select id="prop-font-family">
+              <option value="system-ui">System UI</option>
+              <option value="Arial">Arial</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Inter">Inter</option>
+              <option value="Georgia">Georgia</option>
+            </select>
+          </div>
+
+          <div class="prop-group">
+            <label for="prop-bg-color">Background Color</label>
+            <input id="prop-bg-color" type="color" value="#4a78ff" />
+          </div>
+
+          <div class="prop-group">
+            <label for="prop-text-color">Text Color</label>
+            <input id="prop-text-color" type="color" value="#ffffff" />
+          </div>
         </details>
 
         <details>
-            <summary>Design Tokens</summary>
-            <!-- Variablenverwaltung -->
+          <summary>Design Tokens</summary>
+
+          <!-- Primary Color -->
+          <div class="token-group">
+            <label for="token-primary-color">Primary Color</label>
+            <input type="color" id="token-primary-color" value="#4a78ff" />
+          </div>
+
+          <!-- Secondary Color -->
+          <div class="token-group">
+            <label for="token-secondary-color">Secondary Color</label>
+            <input type="color" id="token-secondary-color" value="#335bef" />
+          </div>
+
+          <!-- Text Color -->
+          <div class="token-group">
+            <label for="token-text-color">Text Color</label>
+            <input type="color" id="token-text-color" value="#222222" />
+          </div>
+
+          <!-- Background Color -->
+          <div class="token-group">
+            <label for="token-bg-color">Background Color</label>
+            <input type="color" id="token-bg-color" value="#ffffff" />
+          </div>
+
+          <!-- Border Radius -->
+          <div class="token-group">
+            <label for="token-border-radius">Border Radius</label>
+            <input
+              type="range"
+              id="token-border-radius"
+              min="0"
+              max="50"
+              value="8"
+            />
+            <span class="value-display" id="token-border-radius-value"
+              >8px</span
+            >
+          </div>
+
+          <!-- Small Spacing -->
+          <div class="token-group">
+            <label for="token-spacing-small">Small Spacing</label>
+            <input
+              type="range"
+              id="token-spacing-small"
+              min="0"
+              max="40"
+              value="8"
+            />
+            <span class="value-display" id="token-spacing-small-value"
+              >8px</span
+            >
+          </div>
+
+          <!-- Medium Spacing -->
+          <div class="token-group">
+            <label for="token-spacing-medium">Medium Spacing</label>
+            <input
+              type="range"
+              id="token-spacing-medium"
+              min="0"
+              max="80"
+              value="16"
+            />
+            <span class="value-display" id="token-spacing-medium-value"
+              >16px</span
+            >
+          </div>
+
+          <!-- Large Spacing -->
+          <div class="token-group">
+            <label for="token-spacing-large">Large Spacing</label>
+            <input
+              type="range"
+              id="token-spacing-large"
+              min="0"
+              max="120"
+              value="24"
+            />
+            <span class="value-display" id="token-spacing-large-value"
+              >24px</span
+            >
+          </div>
         </details>
-    </aside>
+      </aside>
 
-    <!-- Mittelpunkt: Vorschau -->
-    <section id="center-preview">
+      <!-- Mittelpunkt: Vorschau -->
+      <section id="center-preview">
         <div id="preview-area"></div>
-    </section>
+      </section>
 
-    <!-- Rechtes Panel: Export / Aktionen -->
-    <aside id="sidebar-right">
+      <!-- Rechtes Panel: Export / Aktionen -->
+      <aside id="sidebar-right">
         <h2>Actions</h2>
         <button>CSS Export</button>
         <button>JSON Export</button>
@@ -149,9 +303,7 @@
         <button>Redo</button>
         <button>Reset</button>
         <p id="contrast-warning"></p>
-    </aside>
-
-</main>
-
-</body>
+      </aside>
+    </main>
+  </body>
 </html>
