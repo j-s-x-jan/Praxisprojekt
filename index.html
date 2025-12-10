@@ -3,6 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <title>UI Configurator</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: system-ui, sans-serif;
+            background: #e8e8e8;
+            color: #222;
+        }
+
+        /* --- Layout: Drei-Spalten Grid --- */
+        #layout {
+            display: grid;
+            grid-template-columns: 260px 1fr 260px;
+            height: calc(100vh - 80px);
+            gap: 12px;
+            padding: 12px;
+        }
+
+        #sidebar-left,
+        #sidebar-right,
+        #center-preview {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        header {
+            background: white;
+            padding: 16px 24px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            border-radius: 0 0 12px 12px;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        details {
+            margin-bottom: 16px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        summary {
+            font-weight: bold;
+            cursor: pointer;
+            padding: 4px 0;
+        }
+
+        #preview-area {
+            flex: 1;
+            border: 2px dashed #ccc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            min-height: 200px;
+            font-size: 18px;
+            color: #777;
+        }
+
+        #sidebar-right button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-radius: 8px;
+            background: #4a78ff;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        #sidebar-right button:hover {
+            background: #335bef;
+        }
+
+        #contrast-warning {
+            margin-top: auto;
+            padding: 8px;
+            font-size: 14px;
+            color: red;
+            min-height: 1.2em;
+        }
+    </style>
+
 </head>
 
 <body>
@@ -15,18 +114,18 @@
 
     <!-- Linke Control-Panel -->
     <aside id="sidebar-left">
-        <h2>Konfiguration</h2>
+        <h2>Configuration</h2>
 
         <details open>
-            <summary>Komponente</summary>
+            <summary>Component</summary>
             <select id="component-select">
                 <option>Button</option>
-                <option>Karte</option>
+                <option>Map</option>
             </select>
         </details>
 
         <details open>
-            <summary>Eigenschaften</summary>
+            <summary>Properties</summary>
             <!-- Slider, Inputs usw. -->
         </details>
 
@@ -43,12 +142,12 @@
 
     <!-- Rechtes Panel: Export / Aktionen -->
     <aside id="sidebar-right">
-        <h2>Aktionen</h2>
+        <h2>Actions</h2>
         <button>CSS Export</button>
         <button>JSON Export</button>
-        <button>Reset</button>
         <button>Undo</button>
         <button>Redo</button>
+        <button>Reset</button>
         <p id="contrast-warning"></p>
     </aside>
 
@@ -56,4 +155,3 @@
 
 </body>
 </html>
-
