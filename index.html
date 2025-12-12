@@ -759,12 +759,14 @@
           if (undoBtn) undoBtn.addEventListener("click", undo);
           if (redoBtn) redoBtn.addEventListener("click", redo);
 
-          // Reset
           if (resetBtn)
             resetBtn.addEventListener("click", () => {
-              pushSnapshot();
+              pushSnapshot(); // save current state to undo
+              // Reset all properties except the component type
+              const comp = state.component; // remember current component
               state = {
-                component: "button",
+                ...state, // keep other existing state keys
+                component: comp, // preserve current component
                 variant: "primary",
                 size: "medium",
                 text: "",
