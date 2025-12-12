@@ -469,6 +469,7 @@
 
     <script>
       (function () {
+        // --- DOM References ---
         const previewArea = document.getElementById("preview-area");
 
         const compSelect = document.getElementById("component-select");
@@ -517,46 +518,94 @@
         const resetBtn = document.getElementById("reset-btn");
         const exportCSSBtn = document.getElementById("export-css");
         const exportJSONBtn = document.getElementById("export-json");
+        const undoBtn = document.getElementById("undo-btn");
+        const redoBtn = document.getElementById("redo-btn");
 
-        let currentEl = null;
-
+        // --- Utility ---
+        const px = (v) => v + "px";
         function setRootVar(name, value) {
           document.documentElement.style.setProperty(name, value);
         }
 
-        function px(v) {
-          return v + "px";
+        // --- State ---
+        let state = {
+          component: "button",
+          variant: "primary",
+          size: "medium",
+          text: "",
+          fontSize: 16,
+          padding: 10,
+          radius: 8,
+          fontFamily: "system-ui",
+          bgColor: "#4a78ff",
+          textColor: "#ffffff",
+          tokens: {
+            primary: "#4a78ff",
+            secondary: "#335bef",
+            text: "#222222",
+            bg: "#ffffff",
+            radius: 8,
+            spacingSmall: 8,
+            spacingMedium: 16,
+            spacingLarge: 24,
+          },
+        };
+
+        let undoStack = [];
+        let redoStack = [];
+
+        function pushSnapshot() {
+          undoStack.push(JSON.parse(JSON.stringify(state)));
+          if (undoStack.length > 300) undoStack.shift();
+          redoStack = [];
+          updateUndoRedoButtons();
         }
 
-        function createButton({ text, variant, size } = {}) {
+        function undo() {
+          if (!undoStack.length) return;
+          redoStack.push(JSON.parse(JSON.stringify(state)));
+          state = undoStack.pop();
+          renderFromState();
+        }
+
+        function redo() {
+          if (!redoStack.length) return;
+          undoStack.push(JSON.parse(JSON.stringify(state)));
+          state = redoStack.pop();
+          renderFromState();
+        }
+
+        function updateUndoRedoButtons() {
+          if (undoBtn) undoBtn.disabled = undoStack.length === 0;
+          if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+        }
+
+        // --- Component creation ---
+        function createButton({ text, variant, size }) {
           const btn = document.createElement("button");
           btn.className = "preview-button preview-component";
-          if (variant) {
-            if (variant === "outlined") btn.classList.add("outlined");
-            else if (variant === "secondary") btn.classList.add("secondary");
-            else btn.classList.add("primary");
-          }
-          if (size) btn.classList.add("size-" + size);
-          btn.textContent = text || "Button";
+          btn.classList.add(variant || "primary");
+          btn.classList.add("size-" + (size || "medium"));
+          btn.textContent = text || "Text";
           return btn;
         }
 
-        function createCard({ title, body } = {}) {
+        function createCard({ title, body }) {
           const card = document.createElement("div");
           card.className = "preview-card preview-component";
           const h = document.createElement("h3");
-          h.textContent = title || "Card Title";
+          h.textContent = title || "Text";
           const p = document.createElement("p");
-          p.textContent = body || "Card body text goes here.";
+          p.textContent = body || "Example content";
           card.appendChild(h);
           card.appendChild(p);
           return card;
         }
 
-        function createHeader({ text } = {}) {
+        function createHeader({ text }) {
           const header = document.createElement("header");
           header.className = "preview-header preview-component";
-          header.textContent = text || "Page Title";
+          header.textContent = text || "Text";
           return header;
         }
 
@@ -564,235 +613,213 @@
           const ul = document.createElement("ul");
           ul.className = "preview-nav preview-component";
           ["Home", "About", "Contact"].forEach((label) => {
+            const li = document.createElement("li");
             const a = document.createElement("a");
             a.href = "#";
             a.textContent = label;
-            const li = document.createElement("li");
             li.appendChild(a);
             ul.appendChild(li);
           });
           return ul;
         }
 
-        function renderComponent() {
+        // --- Render ---
+        function renderFromState() {
+          // Update controls
+          compSelect.value = state.component;
+          compVariant.value = state.variant;
+          compSize.value = state.size;
+          propText.value = state.text;
+          propFontSize.value = state.fontSize;
+          propPadding.value = state.padding;
+          propRadius.value = state.radius;
+          propFontFamily.value = state.fontFamily;
+          propBgColor.value = state.bgColor;
+          propTextColor.value = state.textColor;
+
+          tokenPrimary.value = state.tokens.primary;
+          tokenSecondary.value = state.tokens.secondary;
+          tokenText.value = state.tokens.text;
+          tokenBg.value = state.tokens.bg;
+          tokenRadius.value = state.tokens.radius;
+          tokenSpacingSmall.value = state.tokens.spacingSmall;
+          tokenSpacingMedium.value = state.tokens.spacingMedium;
+          tokenSpacingLarge.value = state.tokens.spacingLarge;
+
+          fontSizeValue.textContent = px(state.fontSize);
+          paddingValue.textContent = px(state.padding);
+          radiusValue.textContent = px(state.radius);
+          tokenRadiusValue.textContent = px(state.tokens.radius);
+          tokenSpacingSmallValue.textContent = px(state.tokens.spacingSmall);
+          tokenSpacingMediumValue.textContent = px(state.tokens.spacingMedium);
+          tokenSpacingLargeValue.textContent = px(state.tokens.spacingLarge);
+
+          // Apply tokens
+          setRootVar("--color-primary", state.tokens.primary);
+          setRootVar("--color-secondary", state.tokens.secondary);
+          setRootVar("--color-text", state.tokens.text);
+          setRootVar("--color-bg", state.tokens.bg);
+          setRootVar("--border-radius", px(state.tokens.radius));
+          setRootVar("--spacing-small", px(state.tokens.spacingSmall));
+          setRootVar("--spacing-medium", px(state.tokens.spacingMedium));
+          setRootVar("--spacing-large", px(state.tokens.spacingLarge));
+
+          // Render component
           previewArea.innerHTML = "";
-
-          const type = compSelect.value;
-          const variant = compVariant.value;
-          const size = compSize.value;
-
           let el;
-          if (type === "button")
-            el = createButton({
-              text: propText.value || "Enter text...",
-              variant,
-              size,
-            });
-          else if (type === "card")
-            el = createCard({
-              title: propText.value || "Enter text...",
-              body: "Example content...",
-            });
-          else if (type === "header")
-            el = createHeader({ text: propText.value || "Enter text..." });
-          else if (type === "navigation") el = createNav();
-          else el = document.createElement("div");
-
-          el = applyPropertiesToElement(el);
-          previewArea.appendChild(el);
-          currentEl = el;
-        }
-
-        function applyPropertiesToElement(el) {
-          el.style.fontSize = px(propFontSize.value);
-          fontSizeValue.textContent = propFontSize.value + "px";
-
-          if (propPadding) {
-            el.style.padding = px(propPadding.value);
-            paddingValue.textContent = propPadding.value + "px";
+          switch (state.component) {
+            case "button":
+              el = createButton({
+                text: state.text,
+                variant: state.variant,
+                size: state.size,
+              });
+              break;
+            case "card":
+              el = createCard({
+                title: state.text,
+                body: "Example content",
+              });
+              break;
+            case "header":
+              el = createHeader({ text: state.text });
+              break;
+            case "navigation":
+              el = createNav();
+              break;
+            default:
+              el = document.createElement("div");
           }
 
-          el.style.borderRadius = px(propRadius.value);
-          radiusValue.textContent = propRadius.value + "px";
+          el.style.fontSize = px(state.fontSize);
+          el.style.padding = px(state.padding);
+          el.style.borderRadius = px(state.radius);
+          el.style.fontFamily = state.fontFamily;
+          el.style.background = state.bgColor;
+          el.style.color = state.textColor;
 
-          if (propFontFamily && propFontFamily.value)
-            el.style.fontFamily = propFontFamily.value;
-
-          if (propBgColor && propBgColor.value)
-            el.style.background = propBgColor.value;
-          if (propTextColor && propTextColor.value)
-            el.style.color = propTextColor.value;
-
-          return el;
+          previewArea.appendChild(el);
         }
 
-        function initTokens() {
-          setRootVar("--color-primary", tokenPrimary.value);
-          setRootVar("--color-secondary", tokenSecondary.value);
-          setRootVar("--color-text", tokenText.value);
-          setRootVar("--color-bg", tokenBg.value);
-          setRootVar("--border-radius", px(tokenRadius.value));
-          setRootVar("--spacing-small", px(tokenSpacingSmall.value));
-          setRootVar("--spacing-medium", px(tokenSpacingMedium.value));
-          setRootVar("--spacing-large", px(tokenSpacingLarge.value));
-
-          tokenRadiusValue.textContent = px(tokenRadius.value);
-          tokenSpacingSmallValue.textContent = px(tokenSpacingSmall.value);
-          tokenSpacingMediumValue.textContent = px(tokenSpacingMedium.value);
-          tokenSpacingLargeValue.textContent = px(tokenSpacingLarge.value);
-        }
-
-        function attachTokenListeners() {
-          tokenPrimary.addEventListener("input", (e) =>
-            setRootVar("--color-primary", e.target.value)
-          );
-          tokenSecondary.addEventListener("input", (e) =>
-            setRootVar("--color-secondary", e.target.value)
-          );
-          tokenText.addEventListener("input", (e) =>
-            setRootVar("--color-text", e.target.value)
-          );
-          tokenBg.addEventListener("input", (e) =>
-            setRootVar("--color-bg", e.target.value)
-          );
-
-          tokenRadius.addEventListener("input", (e) => {
-            setRootVar("--border-radius", px(e.target.value));
-            tokenRadiusValue.textContent = px(e.target.value);
+        // --- Control listeners ---
+        function attachListeners() {
+          // Component selectors
+          [compSelect, compVariant, compSize].forEach((c) => {
+            c.addEventListener("change", () => {
+              pushSnapshot();
+              state.component = compSelect.value;
+              state.variant = compVariant.value;
+              state.size = compSize.value;
+              renderFromState();
+            });
           });
 
-          tokenSpacingSmall.addEventListener("input", (e) => {
-            setRootVar("--spacing-small", px(e.target.value));
-            tokenSpacingSmallValue.textContent = px(e.target.value);
+          // Properties
+          [
+            [propText, "text"],
+            [propFontSize, "fontSize"],
+            [propPadding, "padding"],
+            [propRadius, "radius"],
+            [propFontFamily, "fontFamily"],
+            [propBgColor, "bgColor"],
+            [propTextColor, "textColor"],
+          ].forEach(([el, key]) => {
+            const event = key === "fontFamily" ? "change" : "input";
+            el.addEventListener(event, () => {
+              pushSnapshot();
+              state[key] = key.includes("Color")
+                ? el.value
+                : el.value || el.valueAsNumber || el.value;
+              renderFromState();
+            });
           });
 
-          tokenSpacingMedium.addEventListener("input", (e) => {
-            setRootVar("--spacing-medium", px(e.target.value));
-            tokenSpacingMediumValue.textContent = px(e.target.value);
+          // Design tokens
+          [
+            [tokenPrimary, "primary"],
+            [tokenSecondary, "secondary"],
+            [tokenText, "text"],
+            [tokenBg, "bg"],
+            [tokenRadius, "radius"],
+            [tokenSpacingSmall, "spacingSmall"],
+            [tokenSpacingMedium, "spacingMedium"],
+            [tokenSpacingLarge, "spacingLarge"],
+          ].forEach(([el, key]) => {
+            el.addEventListener("input", () => {
+              pushSnapshot();
+              state.tokens[key] =
+                key.includes("radius") || key.includes("spacing")
+                  ? Number(el.value)
+                  : el.value;
+              renderFromState();
+            });
           });
 
-          tokenSpacingLarge.addEventListener("input", (e) => {
-            setRootVar("--spacing-large", px(e.target.value));
-            tokenSpacingLargeValue.textContent = px(e.target.value);
-          });
-        }
+          // Undo/Redo
+          if (undoBtn) undoBtn.addEventListener("click", undo);
+          if (redoBtn) redoBtn.addEventListener("click", redo);
 
-        function attachPropertyListeners() {
-          propText.addEventListener("input", () => {
-            if (currentEl) {
-              if (
-                currentEl.tagName.toLowerCase() === "button" ||
-                currentEl.classList.contains("preview-header")
-              ) {
-                currentEl.textContent = propText.value;
-              } else if (currentEl.classList.contains("preview-card")) {
-                const h = currentEl.querySelector("h3");
-                if (h) h.textContent = propText.value;
-              }
-            }
-          });
+          // Reset
+          if (resetBtn)
+            resetBtn.addEventListener("click", () => {
+              pushSnapshot();
+              state = {
+                component: "button",
+                variant: "primary",
+                size: "medium",
+                text: "",
+                fontSize: 16,
+                padding: 10,
+                radius: 8,
+                fontFamily: "system-ui",
+                bgColor: "#4a78ff",
+                textColor: "#ffffff",
+                tokens: {
+                  primary: "#4a78ff",
+                  secondary: "#335bef",
+                  text: "#222222",
+                  bg: "#ffffff",
+                  radius: 8,
+                  spacingSmall: 8,
+                  spacingMedium: 16,
+                  spacingLarge: 24,
+                },
+              };
+              renderFromState();
+            });
 
-          propFontSize.addEventListener("input", () => {
-            if (currentEl) currentEl.style.fontSize = px(propFontSize.value);
-            fontSizeValue.textContent = propFontSize.value + "px";
-          });
-
-          propPadding.addEventListener("input", () => {
-            if (currentEl) currentEl.style.padding = px(propPadding.value);
-            paddingValue.textContent = propPadding.value + "px";
-          });
-
-          propRadius.addEventListener("input", () => {
-            if (currentEl) currentEl.style.borderRadius = px(propRadius.value);
-            radiusValue.textContent = propRadius.value + "px";
-          });
-
-          propFontFamily.addEventListener("change", () => {
-            if (currentEl) currentEl.style.fontFamily = propFontFamily.value;
-          });
-
-          propBgColor.addEventListener("input", () => {
-            if (currentEl) currentEl.style.background = propBgColor.value;
-          });
-
-          propTextColor.addEventListener("input", () => {
-            if (currentEl) currentEl.style.color = propTextColor.value;
-          });
-        }
-
-        function attachComponentListeners() {
-          compSelect.addEventListener("change", () => renderComponent());
-          compVariant.addEventListener("change", () => renderComponent());
-          compSize.addEventListener("change", () => renderComponent());
-        }
-
-        resetBtn.addEventListener("click", () => {
-          tokenPrimary.value = "#4a78ff";
-          tokenSecondary.value = "#335bef";
-          tokenText.value = "#222222";
-          tokenBg.value = "#ffffff";
-          tokenRadius.value = 8;
-          tokenSpacingSmall.value = 8;
-          tokenSpacingMedium.value = 16;
-          tokenSpacingLarge.value = 24;
-
-          initTokens();
-
-          propText.value = "Enter text...";
-          propFontSize.value = 16;
-          propPadding.value = 10;
-          propRadius.value = 8;
-          propFontFamily.value = "system-ui";
-          propBgColor.value = "#4a78ff";
-          propTextColor.value = "#ffffff";
-
-          renderComponent();
-        });
-
-        exportCSSBtn.addEventListener("click", () => {
-          const css = `
+          // Export buttons
+          if (exportCSSBtn)
+            exportCSSBtn.addEventListener("click", () => {
+              const css = `
 :root {
-  --color-primary: ${tokenPrimary.value};
-  --color-secondary: ${tokenSecondary.value};
-  --color-text: ${tokenText.value};
-  --color-bg: ${tokenBg.value};
-  --border-radius: ${tokenRadius.value}px;
-  --spacing-small: ${tokenSpacingSmall.value}px;
-  --spacing-medium: ${tokenSpacingMedium.value}px;
-  --spacing-large: ${tokenSpacingLarge.value}px;
-}
-`;
-          copyToClipboard(css);
-          alert("CSS variables copied to clipboard.");
-        });
+  --color-primary: ${state.tokens.primary};
+  --color-secondary: ${state.tokens.secondary};
+  --color-text: ${state.tokens.text};
+  --color-bg: ${state.tokens.bg};
+  --border-radius: ${state.tokens.radius}px;
+  --spacing-small: ${state.tokens.spacingSmall}px;
+  --spacing-medium: ${state.tokens.spacingMedium}px;
+  --spacing-large: ${state.tokens.spacingLarge}px;
+}`;
+              navigator.clipboard
+                .writeText(css)
+                .then(() => alert("CSS copied!"));
+            });
 
-        exportJSONBtn.addEventListener("click", () => {
-          const json = {
-            tokens: {
-              colorPrimary: tokenPrimary.value,
-              colorSecondary: tokenSecondary.value,
-              colorText: tokenText.value,
-              colorBg: tokenBg.value,
-              borderRadius: tokenRadius.value,
-              spacingSmall: tokenSpacingSmall.value,
-              spacingMedium: tokenSpacingMedium.value,
-              spacingLarge: tokenSpacingLarge.value,
-            },
-          };
-          copyToClipboard(JSON.stringify(json, null, 2));
-          alert("JSON copied to clipboard.");
-        });
-
-        function copyToClipboard(text) {
-          navigator.clipboard?.writeText(text).catch(() => {});
+          if (exportJSONBtn)
+            exportJSONBtn.addEventListener("click", () => {
+              navigator.clipboard
+                .writeText(JSON.stringify(state, null, 2))
+                .then(() => alert("JSON copied!"));
+            });
         }
 
+        // --- Initialize ---
         function init() {
-          initTokens();
-          attachTokenListeners();
-          attachPropertyListeners();
-          attachComponentListeners();
-          renderComponent();
+          pushSnapshot(); // initial state
+          attachListeners();
+          renderFromState();
         }
 
         init();
