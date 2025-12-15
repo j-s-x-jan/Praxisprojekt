@@ -469,7 +469,6 @@
 
     <script>
       (function () {
-        // --- DOM References ---
         const previewArea = document.getElementById("preview-area");
 
         const compSelect = document.getElementById("component-select");
@@ -515,19 +514,19 @@
           "token-spacing-large-value"
         );
 
-        const resetBtn = document.getElementById("reset-btn");
         const exportCSSBtn = document.getElementById("export-css");
         const exportJSONBtn = document.getElementById("export-json");
         const undoBtn = document.getElementById("undo-btn");
         const redoBtn = document.getElementById("redo-btn");
+        const resetBtn = document.getElementById("reset-btn");
 
-        // --- Utility ---
         const px = (v) => v + "px";
+        const deepCopy = (o) => JSON.parse(JSON.stringify(o));
+
         function setRootVar(name, value) {
           document.documentElement.style.setProperty(name, value);
         }
 
-        // --- State ---
         let state = {
           component: "button",
           variant: "primary",
@@ -551,84 +550,81 @@
           },
         };
 
-        let undoStack = [];
-        let redoStack = [];
+        let history = [];
+        let historyIndex = -1;
 
-        function pushSnapshot() {
-          undoStack.push(JSON.parse(JSON.stringify(state)));
-          if (undoStack.length > 300) undoStack.shift();
-          redoStack = [];
+        function recordState() {
+          history = history.slice(0, historyIndex + 1);
+          history.push(deepCopy(state));
+          historyIndex++;
           updateUndoRedoButtons();
         }
 
         function undo() {
-          if (!undoStack.length) return;
-          redoStack.push(JSON.parse(JSON.stringify(state)));
-          state = undoStack.pop();
+          if (historyIndex <= 0) return;
+          historyIndex--;
+          state = deepCopy(history[historyIndex]);
           renderFromState();
+          updateUndoRedoButtons();
         }
 
         function redo() {
-          if (!redoStack.length) return;
-          undoStack.push(JSON.parse(JSON.stringify(state)));
-          state = redoStack.pop();
+          if (historyIndex >= history.length - 1) return;
+          historyIndex++;
+          state = deepCopy(history[historyIndex]);
           renderFromState();
+          updateUndoRedoButtons();
         }
 
         function updateUndoRedoButtons() {
-          if (undoBtn) undoBtn.disabled = undoStack.length === 0;
-          if (redoBtn) redoBtn.disabled = redoStack.length === 0;
+          undoBtn.disabled = historyIndex <= 0;
+          redoBtn.disabled = historyIndex >= history.length - 1;
         }
 
-        // --- Component creation ---
         function createButton({ text, variant, size }) {
           const btn = document.createElement("button");
-          btn.className = "preview-button preview-component";
-          btn.classList.add(variant || "primary");
-          btn.classList.add("size-" + (size || "medium"));
+          btn.className = `preview-button preview-component ${variant} size-${size}`;
           btn.textContent = text || "Text";
           return btn;
         }
 
-        function createCard({ title, body }) {
+        function createCard({ title }) {
           const card = document.createElement("div");
           card.className = "preview-card preview-component";
           const h = document.createElement("h3");
-          h.textContent = title || "Text";
+          h.textContent = title || "Title";
           const p = document.createElement("p");
-          p.textContent = body || "Example content";
-          card.appendChild(h);
-          card.appendChild(p);
+          p.textContent = "Example content";
+          card.append(h, p);
           return card;
         }
 
         function createHeader({ text }) {
-          const header = document.createElement("header");
-          header.className = "preview-header preview-component";
-          header.textContent = text || "Text";
-          return header;
+          const h = document.createElement("header");
+          h.className = "preview-header preview-component";
+          h.textContent = text || "Heading";
+          return h;
         }
 
         function createNav() {
           const ul = document.createElement("ul");
           ul.className = "preview-nav preview-component";
-          ["Home", "About", "Contact"].forEach((label) => {
+          ["Home", "About", "Contact"].forEach((t) => {
             const li = document.createElement("li");
             const a = document.createElement("a");
+            a.textContent = t;
             a.href = "#";
-            a.textContent = label;
             li.appendChild(a);
             ul.appendChild(li);
           });
           return ul;
         }
 
-        // --- Render ---
         function renderFromState() {
-          // Update controls
           compSelect.value = state.component;
           compVariant.value = state.variant;
           compSize.value = state.size;
+
           propText.value = state.text;
           propFontSize.value = state.fontSize;
           propPadding.value = state.padding;
@@ -637,58 +633,26 @@
           propBgColor.value = state.bgColor;
           propTextColor.value = state.textColor;
 
-          tokenPrimary.value = state.tokens.primary;
-          tokenSecondary.value = state.tokens.secondary;
-          tokenText.value = state.tokens.text;
-          tokenBg.value = state.tokens.bg;
-          tokenRadius.value = state.tokens.radius;
-          tokenSpacingSmall.value = state.tokens.spacingSmall;
-          tokenSpacingMedium.value = state.tokens.spacingMedium;
-          tokenSpacingLarge.value = state.tokens.spacingLarge;
-
           fontSizeValue.textContent = px(state.fontSize);
           paddingValue.textContent = px(state.padding);
           radiusValue.textContent = px(state.radius);
-          tokenRadiusValue.textContent = px(state.tokens.radius);
-          tokenSpacingSmallValue.textContent = px(state.tokens.spacingSmall);
-          tokenSpacingMediumValue.textContent = px(state.tokens.spacingMedium);
-          tokenSpacingLargeValue.textContent = px(state.tokens.spacingLarge);
 
-          // Apply tokens
           setRootVar("--color-primary", state.tokens.primary);
           setRootVar("--color-secondary", state.tokens.secondary);
           setRootVar("--color-text", state.tokens.text);
           setRootVar("--color-bg", state.tokens.bg);
-          setRootVar("--border-radius", px(state.tokens.radius));
-          setRootVar("--spacing-small", px(state.tokens.spacingSmall));
-          setRootVar("--spacing-medium", px(state.tokens.spacingMedium));
-          setRootVar("--spacing-large", px(state.tokens.spacingLarge));
 
-          // Render component
           previewArea.innerHTML = "";
           let el;
-          switch (state.component) {
-            case "button":
-              el = createButton({
-                text: state.text,
-                variant: state.variant,
-                size: state.size,
-              });
-              break;
-            case "card":
-              el = createCard({
-                title: state.text,
-                body: "Example content",
-              });
-              break;
-            case "header":
-              el = createHeader({ text: state.text });
-              break;
-            case "navigation":
-              el = createNav();
-              break;
-            default:
-              el = document.createElement("div");
+
+          if (state.component === "button") {
+            el = createButton(state);
+          } else if (state.component === "card") {
+            el = createCard({ title: state.text });
+          } else if (state.component === "header") {
+            el = createHeader({ text: state.text });
+          } else {
+            el = createNav();
           }
 
           el.style.fontSize = px(state.fontSize);
@@ -701,99 +665,8 @@
           previewArea.appendChild(el);
         }
 
-        // --- Control listeners ---
-        function attachListeners() {
-          // Component selectors
-          [compSelect, compVariant, compSize].forEach((c) => {
-            c.addEventListener("change", () => {
-              pushSnapshot();
-              state.component = compSelect.value;
-              state.variant = compVariant.value;
-              state.size = compSize.value;
-              renderFromState();
-            });
-          });
-
-          // Properties
-          [
-            [propText, "text"],
-            [propFontSize, "fontSize"],
-            [propPadding, "padding"],
-            [propRadius, "radius"],
-            [propFontFamily, "fontFamily"],
-            [propBgColor, "bgColor"],
-            [propTextColor, "textColor"],
-          ].forEach(([el, key]) => {
-            const event = key === "fontFamily" ? "change" : "input";
-            el.addEventListener(event, () => {
-              pushSnapshot();
-              state[key] = key.includes("Color")
-                ? el.value
-                : el.value || el.valueAsNumber || el.value;
-              renderFromState();
-            });
-          });
-
-          // Design tokens
-          [
-            [tokenPrimary, "primary"],
-            [tokenSecondary, "secondary"],
-            [tokenText, "text"],
-            [tokenBg, "bg"],
-            [tokenRadius, "radius"],
-            [tokenSpacingSmall, "spacingSmall"],
-            [tokenSpacingMedium, "spacingMedium"],
-            [tokenSpacingLarge, "spacingLarge"],
-          ].forEach(([el, key]) => {
-            el.addEventListener("input", () => {
-              pushSnapshot();
-              state.tokens[key] =
-                key.includes("radius") || key.includes("spacing")
-                  ? Number(el.value)
-                  : el.value;
-              renderFromState();
-            });
-          });
-
-          // Undo/Redo
-          if (undoBtn) undoBtn.addEventListener("click", undo);
-          if (redoBtn) redoBtn.addEventListener("click", redo);
-
-          if (resetBtn)
-            resetBtn.addEventListener("click", () => {
-              pushSnapshot(); // save current state to undo
-              // Reset all properties except the component type
-              const comp = state.component; // remember current component
-              state = {
-                ...state, // keep other existing state keys
-                component: comp, // preserve current component
-                variant: "primary",
-                size: "medium",
-                text: "",
-                fontSize: 16,
-                padding: 10,
-                radius: 8,
-                fontFamily: "system-ui",
-                bgColor: "#4a78ff",
-                textColor: "#ffffff",
-                tokens: {
-                  primary: "#4a78ff",
-                  secondary: "#335bef",
-                  text: "#222222",
-                  bg: "#ffffff",
-                  radius: 8,
-                  spacingSmall: 8,
-                  spacingMedium: 16,
-                  spacingLarge: 24,
-                },
-              };
-              renderFromState();
-            });
-
-          // Export buttons
-          if (exportCSSBtn)
-            exportCSSBtn.addEventListener("click", () => {
-              const css = `
+        function exportCSS() {
+          const css = `
 :root {
   --color-primary: ${state.tokens.primary};
   --color-secondary: ${state.tokens.secondary};
@@ -804,24 +677,60 @@
   --spacing-medium: ${state.tokens.spacingMedium}px;
   --spacing-large: ${state.tokens.spacingLarge}px;
 }`;
-              navigator.clipboard
-                .writeText(css)
-                .then(() => alert("CSS copied!"));
-            });
-
-          if (exportJSONBtn)
-            exportJSONBtn.addEventListener("click", () => {
-              navigator.clipboard
-                .writeText(JSON.stringify(state, null, 2))
-                .then(() => alert("JSON copied!"));
-            });
+          navigator.clipboard.writeText(css).then(() => alert("CSS copied!"));
         }
 
-        // --- Initialize ---
+        function exportJSON() {
+          const json = JSON.stringify(state, null, 2);
+          navigator.clipboard.writeText(json).then(() => alert("JSON copied!"));
+        }
+
+        function attachListeners() {
+          [compSelect, compVariant, compSize].forEach((el) =>
+            el.addEventListener("change", () => {
+              state.component = compSelect.value;
+              state.variant = compVariant.value;
+              state.size = compSize.value;
+              recordState();
+              renderFromState();
+            })
+          );
+
+          [
+            [propText, "text"],
+            [propFontSize, "fontSize"],
+            [propPadding, "padding"],
+            [propRadius, "radius"],
+            [propFontFamily, "fontFamily"],
+            [propBgColor, "bgColor"],
+            [propTextColor, "textColor"],
+          ].forEach(([el, key]) =>
+            el.addEventListener("input", () => {
+              recordState();
+              state[key] = el.valueAsNumber ?? el.value;
+              renderFromState();
+            })
+          );
+          exportCSSBtn.addEventListener("click", exportCSS);
+          exportJSONBtn.addEventListener("click", exportJSON);
+          undoBtn.addEventListener("click", undo);
+          redoBtn.addEventListener("click", redo);
+
+          resetBtn.addEventListener("click", () => {
+            recordState();
+            const comp = state.component;
+            state = deepCopy(history[0]);
+            state.component = comp;
+            renderFromState();
+          });
+        }
+
         function init() {
-          pushSnapshot(); // initial state
+          history = [deepCopy(state)];
+          historyIndex = 0;
           attachListeners();
           renderFromState();
+          updateUndoRedoButtons();
         }
 
         init();
