@@ -178,10 +178,14 @@
 
       .preview-component {
         transition: all 160ms ease;
+        --component-bg: unset;
+        --component-text: unset;
+        background: var(--component-bg);
+        color: var(--component-text);
       }
       .preview-button {
-        background: var(--color-primary);
-        color: var(--color-bg);
+        background: var(--component-bg, var(--color-primary));
+        color: var(--component-text, var(--color-bg));
         border: none;
         border-radius: var(--border-radius);
         padding: calc(var(--spacing-small) * 0.8) var(--spacing-medium);
@@ -202,8 +206,8 @@
       .preview-card {
         --card-bg: var(--color-bg);
         --card-contrast: rgba(34, 34, 34, 0.06);
-        background: var(--card-bg);
-        color: var(--color-text);
+        background: var(--component-bg, var(--color-bg));
+        color: var(--component-text, var(--color-text));
         border-radius: calc(var(--border-radius) * 1);
         padding: 0;
         max-width: 460px;
@@ -220,28 +224,12 @@
         display: block;
         width: 100%;
         padding: var(--spacing-small) var(--spacing-medium);
-        background: var(--color-primary, #4a78ff);
-        color: var(--color-bg, #fff);
+        background: var(--component-bg, var(--color-primary));
+        color: var(--component-text, var(--color-bg));
         border-radius: 8px;
         text-align: center;
         font-weight: 700;
         font-size: 18px;
-      }
-
-      .preview-nav {
-        display: flex;
-        gap: var(--spacing-medium);
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        align-items: center;
-      }
-      .preview-nav a {
-        text-decoration: none;
-        color: var(--color-text);
-        padding: calc(var(--spacing-small) / 2) var(--spacing-small);
-        border-radius: calc(var(--border-radius) / 1.6);
-        font-weight: 600;
       }
 
       .size-small {
@@ -289,7 +277,6 @@
               <option value="button">Button</option>
               <option value="card">Card</option>
               <option value="header">Header</option>
-              <option value="navigation">Navigation</option>
             </select>
           </div>
 
@@ -606,20 +593,6 @@
           return h;
         }
 
-        function createNav() {
-          const ul = document.createElement("ul");
-          ul.className = "preview-nav preview-component";
-          ["Home", "About", "Contact"].forEach((t) => {
-            const li = document.createElement("li");
-            const a = document.createElement("a");
-            a.textContent = t;
-            a.href = "#";
-            li.appendChild(a);
-            ul.appendChild(li);
-          });
-          return ul;
-        }
-
         function renderFromState() {
           compSelect.value = state.component;
           compVariant.value = state.variant;
@@ -651,16 +624,14 @@
             el = createCard({ title: state.text });
           } else if (state.component === "header") {
             el = createHeader({ text: state.text });
-          } else {
-            el = createNav();
-          }
+          } 
 
           el.style.fontSize = px(state.fontSize);
           el.style.padding = px(state.padding);
           el.style.borderRadius = px(state.radius);
           el.style.fontFamily = state.fontFamily;
-          el.style.background = state.bgColor;
-          el.style.color = state.textColor;
+          el.style.setProperty("--component-bg", state.bgColor);
+          el.style.setProperty("--component-text", state.textColor);
 
           previewArea.appendChild(el);
         }
@@ -706,11 +677,12 @@
             [propTextColor, "textColor"],
           ].forEach(([el, key]) =>
             el.addEventListener("input", () => {
+              state[key] = el.type === "range" ? el.valueAsNumber : el.value;
               recordState();
-              state[key] = el.valueAsNumber ?? el.value;
               renderFromState();
             })
           );
+
           exportCSSBtn.addEventListener("click", exportCSS);
           exportJSONBtn.addEventListener("click", exportJSON);
           undoBtn.addEventListener("click", undo);
