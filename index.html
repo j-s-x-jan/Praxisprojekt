@@ -178,20 +178,30 @@
 
       .preview-component {
         transition: all 160ms ease;
-        --component-bg: unset;
-        --component-text: unset;
+
+        --component-bg: transparent;
+        --component-text: inherit;
+        --font-size-adjust: 0px;
+        --padding-adjust: 0px;
+
         background: var(--component-bg);
         color: var(--component-text);
+
+        font-size: calc(var(--font-size-base) + var(--font-size-adjust));
+        padding: calc(var(--padding-y-base) + var(--padding-adjust))
+          calc(var(--padding-x-base) + var(--padding-adjust));
       }
+
+      .preview-button {
+        border: none;
+        cursor: pointer;
+        border-radius: var(--border-radius);
+        box-shadow: 0 6px 18px rgba(34, 34, 34, 0.06);
+      }
+
       .preview-button.primary {
         background: var(--component-bg, var(--color-primary));
         color: var(--component-text, var(--color-bg));
-        border: none;
-        border-radius: var(--border-radius);
-        padding: calc(var(--spacing-small) * 0.8) var(--spacing-medium);
-        font-size: var(--font-base);
-        cursor: pointer;
-        box-shadow: 0 6px 18px rgba(34, 34, 34, 0.06);
       }
 
       .preview-button.secondary {
@@ -205,127 +215,109 @@
         border: 1px solid var(--color-primary);
       }
 
-      .preview-card.primary {
-        background: var(--component-bg, var(--color-bg));
-        color: var(--component-text, var(--color-text));
-        border-radius: calc(var(--border-radius) * 1);
-        padding: 0;
+      .preview-button.size-small {
+        --font-size-base: 13px;
+        --padding-y-base: 6px;
+        --padding-x-base: 10px;
+      }
+
+      .preview-button.size-medium {
+        --font-size-base: 16px;
+        --padding-y-base: 10px;
+        --padding-x-base: 14px;
+      }
+
+      .preview-button.size-large {
+        --font-size-base: 20px;
+        --padding-y-base: 14px;
+        --padding-x-base: 20px;
+      }
+
+      .preview-card {
         max-width: 460px;
         width: 100%;
+        border-radius: var(--border-radius);
         border: 1px solid rgba(0, 0, 0, 0.04);
         overflow: hidden;
         display: flex;
         flex-direction: column;
         transition: box-shadow 0.14s ease;
+      }
+
+      .preview-card.primary {
+        background: var(--component-bg, var(--color-bg));
+        color: var(--component-text, var(--color-text));
       }
 
       .preview-card.secondary {
         background: var(--color-secondary);
         color: var(--color-bg);
-        border-radius: calc(var(--border-radius) * 1);
-        padding: 0;
-        max-width: 460px;
-        width: 100%;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: box-shadow 0.14s ease;
-      }  
+      }
 
       .preview-card.outlined {
         background: transparent;
         color: var(--color-primary);
         border: 1px solid var(--color-primary);
-         border-radius: calc(var(--border-radius) * 1);
-        padding: 0;
-        max-width: 460px;
-        width: 100%;
-        border: 1px solid rgba(0, 0, 0, 0.04);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-        transition: box-shadow 0.14s ease;
-      } 
-      .preview-header.primary {
-        display: block;
-        width: 100%;
-        padding: var(--spacing-small) var(--spacing-medium);
-        background: var(--component-bg, var(--color-primary));
-        color: var(--component-text, var(--color-bg));
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 700;
-        font-size: 18px;
-      }
-
-      .preview-header.secondary {
-        display: block;
-        width: 100%;
-        padding: var(--spacing-small) var(--spacing-medium);
-        background: var(--color-secondary);
-        color: var(--color-bg);
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 700;
-        font-size: 18px;
-      }
-
-      .preview-header.outlined {
-        display: block;
-        width: 100%;
-        padding: var(--spacing-small) var(--spacing-medium);
-        background: transparent;
-        color: var(--color-primary);
-        border-radius: 8px;
-        text-align: center;
-        font-weight: 700;
-        font-size: 18px;
-      }
-
-      .preview-button.size-small {
-        font-size: 13px;
-        padding: 6px 10px;
-      }
-
-      .preview-button.size-medium {
-        font-size: 16px;
-        padding: 10px 14px;
-      }
-
-      .preview-button.size-large {
-        font-size: 20px;
-        padding: 14px 20px;
       }
 
       .preview-card.size-small {
-        padding: 8px;
-        font-size: 14px;
+        --font-size-base: 14px;
+        --padding-y-base: 8px;
+        --padding-x-base: 8px;
       }
 
       .preview-card.size-medium {
-        padding: 16px;
-        font-size: 16px;
+        --font-size-base: 16px;
+        --padding-y-base: 16px;
+        --padding-x-base: 16px;
       }
 
       .preview-card.size-large {
-        padding: 24px;
-        font-size: 18px;
+        --font-size-base: 18px;
+        --padding-y-base: 24px;
+        --padding-x-base: 24px;
+      }
+
+      .preview-header {
+        display: block;
+        width: 100%;
+        text-align: center;
+        font-weight: 700;
+        border-radius: var(--border-radius);
+      }
+
+      .preview-header.primary {
+        background: var(--component-bg, var(--color-primary));
+        color: var(--component-text, var(--color-bg));
+      }
+
+      .preview-header.secondary {
+        background: var(--color-secondary);
+        color: var(--color-bg);
+      }
+
+      .preview-header.outlined {
+        background: transparent;
+        color: var(--color-primary);
+        border: 1px solid var(--color-primary);
       }
 
       .preview-header.size-small {
-        font-size: 16px;
-        padding: 8px 12px;
+        --font-size-base: 16px;
+        --padding-y-base: 8px;
+        --padding-x-base: 12px;
       }
 
       .preview-header.size-medium {
-        font-size: 20px;
-        padding: 12px 16px;
+        --font-size-base: 20px;
+        --padding-y-base: 12px;
+        --padding-x-base: 16px;
       }
 
       .preview-header.size-large {
-        font-size: 26px;
-        padding: 16px 20px;
+        --font-size-base: 26px;
+        --padding-y-base: 16px;
+        --padding-x-base: 20px;
       }
 
       button:focus,
@@ -399,49 +391,58 @@
           margin-bottom: 8px;
         }
 
-        .preview-button {
-          padding: 8px 12px;
-          font-size: 14px;
-          box-shadow: 0 4px 12px rgba(34, 34, 34, 0.06);
+        .preview-button.size-small {
+          --font-size-base: 12px;
+          --padding-y-base: 6px;
+          --padding-x-base: 10px;
         }
 
-        .preview-button.size-small {
-          font-size: 12px;
-          padding: 6px 10px;
-        }
         .preview-button.size-medium {
-          font-size: 14px;
-          padding: 8px 12px;
+          --font-size-base: 14px;
+          --padding-y-base: 8px;
+          --padding-x-base: 12px;
         }
+
         .preview-button.size-large {
-          font-size: 16px;
-          padding: 10px 14px;
+          --font-size-base: 16px;
+          --padding-y-base: 10px;
+          --padding-x-base: 14px;
         }
 
         .preview-card.size-small {
-          padding: 8px;
-          font-size: 14px;
+          --font-size-base: 13px;
+          --padding-y-base: 6px;
+          --padding-x-base: 8px;
         }
+
         .preview-card.size-medium {
-          padding: 12px;
-          font-size: 15px;
+          --font-size-base: 14px;
+          --padding-y-base: 12px;
+          --padding-x-base: 12px;
         }
+
         .preview-card.size-large {
-          padding: 18px;
-          font-size: 16px;
+          --font-size-base: 16px;
+          --padding-y-base: 18px;
+          --padding-x-base: 18px;
         }
 
         .preview-header.size-small {
-          font-size: 16px;
-          padding: 8px 10px;
+          --font-size-base: 15px;
+          --padding-y-base: 8px;
+          --padding-x-base: 10px;
         }
+
         .preview-header.size-medium {
-          font-size: 18px;
-          padding: 10px 12px;
+          --font-size-base: 17px;
+          --padding-y-base: 10px;
+          --padding-x-base: 12px;
         }
+
         .preview-header.size-large {
-          font-size: 22px;
-          padding: 12px 14px;
+          --font-size-base: 20px;
+          --padding-y-base: 12px;
+          --padding-x-base: 14px;
         }
 
         .preview-nav {
@@ -460,6 +461,7 @@
           padding: 6px;
           gap: 8px;
         }
+
         header h1 {
           font-size: 15px;
         }
@@ -482,17 +484,58 @@
           font-size: 13px;
         }
 
-        .preview-button {
-          font-size: 13px;
-          padding: 7px 10px;
+        .preview-button.size-small {
+          --font-size-base: 11px;
+          --padding-y-base: 5px;
+          --padding-x-base: 8px;
         }
+
+        .preview-button.size-medium {
+          --font-size-base: 13px;
+          --padding-y-base: 6px;
+          --padding-x-base: 10px;
+        }
+
+        .preview-button.size-large {
+          --font-size-base: 15px;
+          --padding-y-base: 8px;
+          --padding-x-base: 12px;
+        }
+
         .preview-card.size-small {
-          font-size: 13px;
-          padding: 6px;
+          --font-size-base: 12px;
+          --padding-y-base: 6px;
+          --padding-x-base: 6px;
         }
+
+        .preview-card.size-medium {
+          --font-size-base: 13px;
+          --padding-y-base: 10px;
+          --padding-x-base: 10px;
+        }
+
+        .preview-card.size-large {
+          --font-size-base: 15px;
+          --padding-y-base: 14px;
+          --padding-x-base: 14px;
+        }
+
         .preview-header.size-small {
-          font-size: 15px;
-          padding: 8px 10px;
+          --font-size-base: 14px;
+          --padding-y-base: 7px;
+          --padding-x-base: 8px;
+        }
+
+        .preview-header.size-medium {
+          --font-size-base: 15px;
+          --padding-y-base: 8px;
+          --padding-x-base: 10px;
+        }
+
+        .preview-header.size-large {
+          --font-size-base: 18px;
+          --padding-y-base: 10px;
+          --padding-x-base: 12px;
         }
 
         :root {
@@ -751,6 +794,24 @@
         const px = (v) => v + "px";
         const deepCopy = (o) => JSON.parse(JSON.stringify(o));
 
+        const PRESETS = {
+          button: {
+            small: { font: 13, pad: 6 },
+            medium: { font: 16, pad: 10 },
+            large: { font: 20, pad: 14 },
+          },
+          card: {
+            small: { font: 14, pad: 8 },
+            medium: { font: 16, pad: 16 },
+            large: { font: 18, pad: 24 },
+          },
+          header: {
+            small: { font: 16, pad: 8 },
+            medium: { font: 20, pad: 12 },
+            large: { font: 26, pad: 16 },
+          },
+        };
+
         function setRootVar(name, value) {
           document.documentElement.style.setProperty(name, value);
         }
@@ -760,8 +821,8 @@
           variant: "primary",
           size: "medium",
           text: "",
-          fontSize: 16,
-          padding: 10,
+          fontSizeAdjust: 0,
+          paddingAdjust: 0,
           radius: 8,
           fontFamily: "system-ui",
           bgColor: "#4a78ff",
@@ -847,8 +908,15 @@
           propBgColor.value = state.bgColor;
           propTextColor.value = state.textColor;
 
-          fontSizeValue.textContent = px(state.fontSize);
-          paddingValue.textContent = px(state.padding);
+          const preset = PRESETS[state.component][state.size];
+
+          propFontSize.value = preset.font + state.fontSizeAdjust;
+          propPadding.value = preset.pad + state.paddingAdjust;
+
+          fontSizeValue.textContent = px(preset.font + state.fontSizeAdjust);
+
+          paddingValue.textContent = px(preset.pad + state.paddingAdjust);
+
           radiusValue.textContent = px(state.radius);
 
           setRootVar("--color-primary", state.tokens.primary);
@@ -866,8 +934,8 @@
           } else if (state.component === "header") {
             el = createHeader(state);
           }
-          el.style.fontSize = px(state.fontSize);
-          el.style.padding = px(state.padding);
+          el.style.setProperty("--font-size-adjust", px(state.fontSizeAdjust));
+          el.style.setProperty("--padding-adjust", px(state.paddingAdjust));
           el.style.borderRadius = px(state.radius);
           el.style.fontFamily = state.fontFamily;
           el.style.setProperty("--component-bg", state.bgColor);
@@ -897,11 +965,10 @@
         }
 
         function attachListeners() {
-          [compSelect, compVariant, compSize].forEach((el) =>
+          [compSelect, compVariant].forEach((el) =>
             el.addEventListener("change", () => {
               state.component = compSelect.value;
               state.variant = compVariant.value;
-              state.size = compSize.value;
               recordState();
               renderFromState();
             })
@@ -909,8 +976,6 @@
 
           [
             [propText, "text"],
-            [propFontSize, "fontSize"],
-            [propPadding, "padding"],
             [propRadius, "radius"],
             [propFontFamily, "fontFamily"],
             [propBgColor, "bgColor"],
@@ -922,6 +987,36 @@
               renderFromState();
             })
           );
+
+          propFontSize.addEventListener("input", () => {
+            const base = PRESETS[state.component][state.size].font;
+
+            state.fontSizeAdjust = propFontSize.valueAsNumber - base;
+
+            recordState();
+            renderFromState();
+          });
+
+          propPadding.addEventListener("input", () => {
+            const base = PRESETS[state.component][state.size].pad;
+
+            state.paddingAdjust = propPadding.valueAsNumber - base;
+
+            recordState();
+            renderFromState();
+          });
+
+          compSize.addEventListener("change", () => {
+            state.size = compSize.value;
+
+            const preset = PRESETS[state.component][state.size];
+
+            propFontSize.value = preset.font + state.fontSizeAdjust;
+            propPadding.value = preset.pad + state.paddingAdjust;
+
+            recordState();
+            renderFromState();
+          });
 
           exportCSSBtn.addEventListener("click", exportCSS);
           exportJSONBtn.addEventListener("click", exportJSON);
