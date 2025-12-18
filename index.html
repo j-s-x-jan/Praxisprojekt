@@ -178,41 +178,41 @@
 
       .preview-component {
         transition: all 160ms ease;
-
-        --component-bg: transparent;
-        --component-text: inherit;
-        --font-size-adjust: 0px;
-        --padding-adjust: 0px;
+        --component-bg: unset;
+        --component-text: unset;
+        --component-border-radius: unset;
 
         background: var(--component-bg);
-        color: var(--component-text);
-
-        font-size: calc(var(--font-size-base) + var(--font-size-adjust));
-        padding: calc(var(--padding-y-base) + var(--padding-adjust))
-          calc(var(--padding-x-base) + var(--padding-adjust));
+        color: var(--component-text, var(--token-text));
+        border-radius: var(
+          --component-border-radius,
+          var(--token-border-radius)
+        );
+        font-size: calc(var(--font-size-base) + var(--font-size-adjust, 0px));
+        padding: calc(var(--padding-y-base) + var(--padding-adjust, 0px))
+          calc(var(--padding-x-base) + var(--padding-adjust, 0px));
       }
 
       .preview-button {
         border: none;
         cursor: pointer;
-        border-radius: var(--border-radius);
         box-shadow: 0 6px 18px rgba(34, 34, 34, 0.06);
       }
 
       .preview-button.primary {
-        background: var(--component-bg, var(--color-primary));
-        color: var(--component-text, var(--color-bg));
+        background: var(--component-bg, var(--token-primary));
+        color: var(--component-text, var(--token-text));
       }
 
       .preview-button.secondary {
-        background: var(--color-secondary);
-        color: var(--color-bg);
+        background: var(--component-bg, var(--token-secondary));
+        color: var(--component-text, var(--token-text));
       }
 
       .preview-button.outlined {
         background: transparent;
-        color: var(--color-primary);
-        border: 1px solid var(--color-primary);
+        color: var(--component-text, var(--token-primary));
+        border: 1px solid var(--token-primary);
       }
 
       .preview-button.size-small {
@@ -236,7 +236,6 @@
       .preview-card {
         max-width: 460px;
         width: 100%;
-        border-radius: var(--border-radius);
         border: 1px solid rgba(0, 0, 0, 0.04);
         overflow: hidden;
         display: flex;
@@ -245,19 +244,19 @@
       }
 
       .preview-card.primary {
-        background: var(--component-bg, var(--color-bg));
-        color: var(--component-text, var(--color-text));
+        background: var(--component-bg, var(--token-primary));
+        color: var(--component-text, var(--token-text));
       }
 
       .preview-card.secondary {
-        background: var(--color-secondary);
-        color: var(--color-bg);
+        background: var(--component-bg, var(--token-secondary));
+        color: var(--component-text, var(--token-text));
       }
 
       .preview-card.outlined {
         background: transparent;
-        color: var(--color-primary);
-        border: 1px solid var(--color-primary);
+        color: var(--component-text, var(--token-primary));
+        border: 1px solid var(--token-primary);
       }
 
       .preview-card.size-small {
@@ -283,23 +282,22 @@
         width: 100%;
         text-align: center;
         font-weight: 700;
-        border-radius: var(--border-radius);
       }
 
       .preview-header.primary {
-        background: var(--component-bg, var(--color-primary));
-        color: var(--component-text, var(--color-bg));
+        background: var(--component-bg, var(--token-primary));
+        color: var(--component-text, var(--token-text));
       }
 
       .preview-header.secondary {
-        background: var(--color-secondary);
-        color: var(--color-bg);
+        background: var(--component-bg, var(--token-secondary));
+        color: var(--component-text, var(--token-text));
       }
 
       .preview-header.outlined {
         background: transparent;
-        color: var(--color-primary);
-        border: 1px solid var(--color-primary);
+        color: var(--component-text, var(--token-primary));
+        border: 1px solid var(--token-primary);
       }
 
       .preview-header.size-small {
@@ -552,11 +550,11 @@
       <aside id="sidebar-left">
         <h2>Configuration</h2>
 
-        <details open>
+        <details>
           <summary>Component</summary>
 
           <div class="comp-group">
-            <label for="component-select">Choose Component</label>
+            <label for="component-select">Choose component</label>
             <select id="component-select">
               <option value="button">Button</option>
               <option value="card">Card</option>
@@ -583,7 +581,7 @@
           </div>
         </details>
 
-        <details open>
+        <details>
           <summary>Properties</summary>
 
           <div class="prop-group">
@@ -661,11 +659,6 @@
           </div>
 
           <div class="token-group">
-            <label for="token-bg-color">Background Color</label>
-            <input type="color" id="token-bg-color" value="#ffffff" />
-          </div>
-
-          <div class="token-group">
             <label for="token-border-radius">Border Radius</label>
             <input
               type="range"
@@ -733,7 +726,7 @@
         <button id="export-json">Export JSON</button>
         <button id="undo-btn">Undo</button>
         <button id="redo-btn">Redo</button>
-        <button id="reset-btn">Reset</button>
+        <button id="reset-btn">Reset properties</button>
       </aside>
     </main>
 
@@ -760,7 +753,6 @@
         const tokenPrimary = document.getElementById("token-primary-color");
         const tokenSecondary = document.getElementById("token-secondary-color");
         const tokenText = document.getElementById("token-text-color");
-        const tokenBg = document.getElementById("token-bg-color");
         const tokenRadius = document.getElementById("token-border-radius");
         const tokenRadiusValue = document.getElementById(
           "token-border-radius-value"
@@ -815,6 +807,39 @@
           document.documentElement.style.setProperty(name, value);
         }
 
+        function hexToRgb(hex) {
+          const h = hex.replace("#", "");
+          if (h.length === 3) {
+            return [
+              parseInt(h[0] + h[0], 16),
+              parseInt(h[1] + h[1], 16),
+              parseInt(h[2] + h[2], 16),
+            ];
+          }
+          return [
+            parseInt(h.slice(0, 2), 16),
+            parseInt(h.slice(2, 4), 16),
+            parseInt(h.slice(4, 6), 16),
+          ];
+        }
+
+        function applyTokensToPreview() {
+          const root = document.getElementById("preview-area");
+          const t = state.tokens;
+
+          root.style.setProperty("--token-primary", t.primary);
+          root.style.setProperty("--token-secondary", t.secondary);
+          root.style.setProperty("--token-text", t.text);
+
+          root.style.setProperty("--token-border-radius", px(t.radius));
+          root.style.setProperty("--token-spacing-small", px(t.spacingSmall));
+          root.style.setProperty("--token-spacing-medium", px(t.spacingMedium));
+          root.style.setProperty("--token-spacing-large", px(t.spacingLarge));
+
+          root.style.setProperty("--token-on-primary", t.text);
+          root.style.setProperty("--token-on-secondary", t.text);
+        }
+
         let state = {
           component: "button",
           variant: "primary",
@@ -822,15 +847,23 @@
           text: "",
           fontSizeAdjust: 0,
           paddingAdjust: 0,
+
           radius: 8,
-          fontFamily: "system-ui",
           bgColor: "#4a78ff",
           textColor: "#ffffff",
+
+          overrides: {
+            radius: false,
+            bgColor: false,
+            textColor: false,
+          },
+
+          fontFamily: "system-ui",
+
           tokens: {
             primary: "#4a78ff",
             secondary: "#335bef",
-            text: "#222222",
-            bg: "#ffffff",
+            text: "#ffffff",
             radius: 8,
             spacingSmall: 8,
             spacingMedium: 16,
@@ -899,29 +932,53 @@
           compVariant.value = state.variant;
           compSize.value = state.size;
 
-          propText.value = state.text;
-          propFontSize.value = state.fontSize;
-          propPadding.value = state.padding;
-          propRadius.value = state.radius;
-          propFontFamily.value = state.fontFamily;
-          propBgColor.value = state.bgColor;
-          propTextColor.value = state.textColor;
-
           const preset = PRESETS[state.component][state.size];
 
-          propFontSize.value = preset.font + state.fontSizeAdjust;
-          propPadding.value = preset.pad + state.paddingAdjust;
+          propText.value = state.text;
 
-          fontSizeValue.textContent = px(preset.font + state.fontSizeAdjust);
+          const effectiveFontSize = preset.font + state.fontSizeAdjust;
+          const effectivePadding = preset.pad + state.paddingAdjust;
 
-          paddingValue.textContent = px(preset.pad + state.paddingAdjust);
+          propFontSize.value = effectiveFontSize;
+          propPadding.value = effectivePadding;
 
-          radiusValue.textContent = px(state.radius);
+          fontSizeValue.textContent = px(effectiveFontSize);
+          paddingValue.textContent = px(effectivePadding);
 
-          setRootVar("--color-primary", state.tokens.primary);
-          setRootVar("--color-secondary", state.tokens.secondary);
-          setRootVar("--color-text", state.tokens.text);
-          setRootVar("--color-bg", state.tokens.bg);
+          const effectiveRadius = state.overrides.radius
+            ? state.radius
+            : state.tokens.radius;
+
+          propRadius.value = effectiveRadius;
+          radiusValue.textContent = px(effectiveRadius);
+
+          propFontFamily.value = state.fontFamily;
+
+          propBgColor.value = state.bgColor;
+
+          const effectiveTextColor = state.overrides.textColor
+            ? state.textColor
+            : state.tokens.text;
+
+          propTextColor.value = effectiveTextColor;
+
+          tokenPrimary.value = state.tokens.primary;
+          tokenSecondary.value = state.tokens.secondary;
+          tokenText.value = state.tokens.text;
+
+          tokenRadius.value = state.tokens.radius;
+          tokenRadiusValue.textContent = px(state.tokens.radius);
+
+          tokenSpacingSmall.value = state.tokens.spacingSmall;
+          tokenSpacingSmallValue.textContent = px(state.tokens.spacingSmall);
+
+          tokenSpacingMedium.value = state.tokens.spacingMedium;
+          tokenSpacingMediumValue.textContent = px(state.tokens.spacingMedium);
+
+          tokenSpacingLarge.value = state.tokens.spacingLarge;
+          tokenSpacingLargeValue.textContent = px(state.tokens.spacingLarge);
+
+          applyTokensToPreview();
 
           previewArea.innerHTML = "";
           let el;
@@ -930,37 +987,90 @@
             el = createButton(state);
           } else if (state.component === "card") {
             el = createCard(state);
-          } else if (state.component === "header") {
+          } else {
             el = createHeader(state);
           }
+
           el.style.setProperty("--font-size-adjust", px(state.fontSizeAdjust));
           el.style.setProperty("--padding-adjust", px(state.paddingAdjust));
-          el.style.borderRadius = px(state.radius);
           el.style.fontFamily = state.fontFamily;
-          el.style.setProperty("--component-bg", state.bgColor);
-          el.style.setProperty("--component-text", state.textColor);
+
+          if (state.overrides.radius) {
+            el.style.setProperty("--component-border-radius", px(state.radius));
+          } else {
+            el.style.removeProperty("--component-border-radius");
+          }
+
+          if (state.overrides.bgColor) {
+            el.style.setProperty("--component-bg", state.bgColor);
+          } else {
+            el.style.removeProperty("--component-bg");
+          }
+
+          if (state.overrides.textColor) {
+            el.style.setProperty("--component-text", state.textColor);
+          } else {
+            el.style.removeProperty("--component-text");
+          }
 
           previewArea.appendChild(el);
         }
 
         function exportCSS() {
-          const css = `
-:root {
-  --color-primary: ${state.tokens.primary};
-  --color-secondary: ${state.tokens.secondary};
-  --color-text: ${state.tokens.text};
-  --color-bg: ${state.tokens.bg};
-  --border-radius: ${state.tokens.radius}px;
-  --spacing-small: ${state.tokens.spacingSmall}px;
-  --spacing-medium: ${state.tokens.spacingMedium}px;
-  --spacing-large: ${state.tokens.spacingLarge}px;
-}`;
-          navigator.clipboard.writeText(css).then(() => alert("CSS copied!"));
+          const t = state.tokens;
+          const overrides = {
+            "--component-font-family": state.fontFamily,
+            "--component-font-size":
+              PRESETS[state.component][state.size].font +
+              state.fontSizeAdjust +
+              "px",
+            "--component-padding":
+              PRESETS[state.component][state.size].pad +
+              state.paddingAdjust +
+              "px",
+          };
+          if (state.overrides.radius)
+            overrides["--component-border-radius"] = state.radius + "px";
+          if (state.overrides.bgColor)
+            overrides["--component-bg"] = state.bgColor;
+          if (state.overrides.textColor)
+            overrides["--component-text"] = state.textColor;
+
+          let css = ":root {\n";
+          css += `  --token-primary: ${t.primary};\n`;
+          css += `  --token-secondary: ${t.secondary};\n`;
+          css += `  --token-text: ${t.text};\n`;
+          css += `  --token-border-radius: ${t.radius}px;\n`;
+          css += `  --token-spacing-small: ${t.spacingSmall}px;\n`;
+          css += `  --token-spacing-medium: ${t.spacingMedium}px;\n`;
+          css += `  --token-spacing-large: ${t.spacingLarge}px;\n`;
+          for (const key in overrides) {
+            css += `  ${key}: ${overrides[key]};\n`;
+          }
+          css += "}";
+
+          navigator.clipboard
+            .writeText(css)
+            .then(() => alert("CSS copied!"));
         }
 
         function exportJSON() {
-          const json = JSON.stringify(state, null, 2);
-          navigator.clipboard.writeText(json).then(() => alert("JSON copied!"));
+          const exportData = {
+            component: state.component,
+            variant: state.variant,
+            size: state.size,
+            text: state.text,
+            fontFamily: state.fontFamily,
+            fontSizeAdjust: state.fontSizeAdjust,
+            paddingAdjust: state.paddingAdjust,
+            radius: state.radius,
+            bgColor: state.bgColor,
+            textColor: state.textColor,
+            tokens: state.tokens,
+          };
+          navigator.clipboard
+            .writeText(JSON.stringify(exportData, null, 2))
+            .then(() => alert("JSON copied!"));
         }
 
         function attachListeners() {
@@ -973,19 +1083,39 @@
             })
           );
 
-          [
-            [propText, "text"],
-            [propRadius, "radius"],
-            [propFontFamily, "fontFamily"],
-            [propBgColor, "bgColor"],
-            [propTextColor, "textColor"],
-          ].forEach(([el, key]) =>
-            el.addEventListener("input", () => {
-              state[key] = el.type === "range" ? el.valueAsNumber : el.value;
-              recordState();
-              renderFromState();
-            })
-          );
+          propText.addEventListener("input", () => {
+            state.text = propText.value;
+            recordState();
+            renderFromState();
+          });
+
+          propRadius.addEventListener("input", () => {
+            state.radius = propRadius.valueAsNumber;
+            state.overrides.radius = true;
+            radiusValue.textContent = px(state.radius);
+            recordState();
+            renderFromState();
+          });
+
+          propFontFamily.addEventListener("input", () => {
+            state.fontFamily = propFontFamily.value;
+            recordState();
+            renderFromState();
+          });
+
+          propBgColor.addEventListener("input", () => {
+            state.bgColor = propBgColor.value;
+            state.overrides.bgColor = true;
+            recordState();
+            renderFromState();
+          });
+
+          propTextColor.addEventListener("input", () => {
+            state.textColor = propTextColor.value;
+            state.overrides.textColor = true;
+            recordState();
+            renderFromState();
+          });
 
           propFontSize.addEventListener("input", () => {
             const base = PRESETS[state.component][state.size].font;
@@ -1017,6 +1147,54 @@
             renderFromState();
           });
 
+          tokenPrimary.addEventListener("input", () => {
+            state.tokens.primary = tokenPrimary.value;
+            recordState();
+            renderFromState();
+          });
+
+          tokenSecondary.addEventListener("input", () => {
+            state.tokens.secondary = tokenSecondary.value;
+            recordState();
+            renderFromState();
+          });
+
+          tokenText.addEventListener("input", () => {
+            state.tokens.text = tokenText.value;
+            recordState();
+            renderFromState();
+          });
+
+          tokenRadius.addEventListener("input", () => {
+            state.tokens.radius = tokenRadius.valueAsNumber;
+            tokenRadiusValue.textContent = px(state.tokens.radius);
+            recordState();
+            renderFromState();
+          });
+
+          tokenSpacingSmall.addEventListener("input", () => {
+            state.tokens.spacingSmall = tokenSpacingSmall.valueAsNumber;
+            tokenSpacingSmallValue.textContent = px(state.tokens.spacingSmall);
+            recordState();
+            renderFromState();
+          });
+
+          tokenSpacingMedium.addEventListener("input", () => {
+            state.tokens.spacingMedium = tokenSpacingMedium.valueAsNumber;
+            tokenSpacingMediumValue.textContent = px(
+              state.tokens.spacingMedium
+            );
+            recordState();
+            renderFromState();
+          });
+
+          tokenSpacingLarge.addEventListener("input", () => {
+            state.tokens.spacingLarge = tokenSpacingLarge.valueAsNumber;
+            tokenSpacingLargeValue.textContent = px(state.tokens.spacingLarge);
+            recordState();
+            renderFromState();
+          });
+
           exportCSSBtn.addEventListener("click", exportCSS);
           exportJSONBtn.addEventListener("click", exportJSON);
           undoBtn.addEventListener("click", undo);
@@ -1024,9 +1202,18 @@
 
           resetBtn.addEventListener("click", () => {
             recordState();
+
             const comp = state.component;
+            const variant = state.variant;
+            const size = state.size;
+            const tokens = deepCopy(state.tokens);
+
             state = deepCopy(history[0]);
             state.component = comp;
+            state.variant = variant;
+            state.size = size;
+            state.tokens = tokens;
+
             renderFromState();
           });
         }
