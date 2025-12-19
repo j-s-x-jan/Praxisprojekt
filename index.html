@@ -685,6 +685,10 @@
         <button id="undo-btn">Undo</button>
         <button id="redo-btn">Redo</button>
         <button id="reset-btn">Reset Properties</button>
+        <div
+          id="contrast-warning"
+          style="color: red; font-size: 13px; margin-top: 10px"
+        ></div>
       </aside>
     </main>
 
@@ -859,6 +863,40 @@
           return h;
         }
 
+        function getLuminance(rgb) {
+          const srgb = rgb
+            .map((v) => v / 255)
+            .map((v) =>
+              v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+            );
+          return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+        }
+
+        function getContrastRatio(hex1, hex2) {
+          const lum1 = getLuminance(hexToRgb(hex1));
+          const lum2 = getLuminance(hexToRgb(hex2));
+          const brightest = Math.max(lum1, lum2);
+          const darkest = Math.min(lum1, lum2);
+          return (brightest + 0.05) / (darkest + 0.05);
+        }
+
+        function updateContrastWarning() {
+          const warningEl = document.getElementById("contrast-warning");
+          const bg = state.overrides.bgColor
+            ? state.bgColor
+            : state.tokens.primary;
+          const text = state.overrides.textColor
+            ? state.textColor
+            : state.tokens.text;
+          const ratio = getContrastRatio(bg, text);
+
+          if (ratio < 2) {
+            warningEl.textContent = `⚠️ Low contrast between text and background. Text may be hard to read.`;
+          } else {
+            warningEl.textContent = "";
+          }
+        }
+
         function renderFromState() {
           compSelect.value = state.component;
           compVariant.value = state.variant;
@@ -937,6 +975,8 @@
           }
 
           previewArea.appendChild(el);
+
+          updateContrastWarning();
         }
 
         function exportCSS() {
@@ -983,8 +1023,8 @@
             size: state.size,
             text: state.text,
             fontFamily: state.fontFamily,
-            fontSize: computedFontSize + "px", 
-            padding: computedPadding + "px", 
+            fontSize: computedFontSize + "px",
+            padding: computedPadding + "px",
             radius: state.radius,
             bgColor: state.bgColor,
             textColor: state.textColor,
