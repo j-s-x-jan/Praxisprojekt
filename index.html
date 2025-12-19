@@ -554,7 +554,7 @@
           <summary>Component</summary>
 
           <div class="comp-group">
-            <label for="component-select">Choose component</label>
+            <label for="component-select">Choose Component</label>
             <select id="component-select">
               <option value="button">Button</option>
               <option value="card">Card</option>
@@ -671,48 +671,6 @@
               >8px</span
             >
           </div>
-
-          <div class="token-group">
-            <label for="token-spacing-small">Small Spacing</label>
-            <input
-              type="range"
-              id="token-spacing-small"
-              min="0"
-              max="40"
-              value="8"
-            />
-            <span class="value-display" id="token-spacing-small-value"
-              >8px</span
-            >
-          </div>
-
-          <div class="token-group">
-            <label for="token-spacing-medium">Medium Spacing</label>
-            <input
-              type="range"
-              id="token-spacing-medium"
-              min="0"
-              max="80"
-              value="16"
-            />
-            <span class="value-display" id="token-spacing-medium-value"
-              >16px</span
-            >
-          </div>
-
-          <div class="token-group">
-            <label for="token-spacing-large">Large Spacing</label>
-            <input
-              type="range"
-              id="token-spacing-large"
-              min="0"
-              max="120"
-              value="24"
-            />
-            <span class="value-display" id="token-spacing-large-value"
-              >24px</span
-            >
-          </div>
         </details>
       </aside>
 
@@ -726,7 +684,7 @@
         <button id="export-json">Export JSON</button>
         <button id="undo-btn">Undo</button>
         <button id="redo-btn">Redo</button>
-        <button id="reset-btn">Reset properties</button>
+        <button id="reset-btn">Reset Properties</button>
       </aside>
     </main>
 
@@ -756,24 +714,6 @@
         const tokenRadius = document.getElementById("token-border-radius");
         const tokenRadiusValue = document.getElementById(
           "token-border-radius-value"
-        );
-        const tokenSpacingSmall = document.getElementById(
-          "token-spacing-small"
-        );
-        const tokenSpacingSmallValue = document.getElementById(
-          "token-spacing-small-value"
-        );
-        const tokenSpacingMedium = document.getElementById(
-          "token-spacing-medium"
-        );
-        const tokenSpacingMediumValue = document.getElementById(
-          "token-spacing-medium-value"
-        );
-        const tokenSpacingLarge = document.getElementById(
-          "token-spacing-large"
-        );
-        const tokenSpacingLargeValue = document.getElementById(
-          "token-spacing-large-value"
         );
 
         const exportCSSBtn = document.getElementById("export-css");
@@ -830,12 +770,7 @@
           root.style.setProperty("--token-primary", t.primary);
           root.style.setProperty("--token-secondary", t.secondary);
           root.style.setProperty("--token-text", t.text);
-
           root.style.setProperty("--token-border-radius", px(t.radius));
-          root.style.setProperty("--token-spacing-small", px(t.spacingSmall));
-          root.style.setProperty("--token-spacing-medium", px(t.spacingMedium));
-          root.style.setProperty("--token-spacing-large", px(t.spacingLarge));
-
           root.style.setProperty("--token-on-primary", t.text);
           root.style.setProperty("--token-on-secondary", t.text);
         }
@@ -865,9 +800,6 @@
             secondary: "#335bef",
             text: "#ffffff",
             radius: 8,
-            spacingSmall: 8,
-            spacingMedium: 16,
-            spacingLarge: 24,
           },
         };
 
@@ -909,11 +841,11 @@
           return btn;
         }
 
-        function createCard({ title, variant, size }) {
+        function createCard({ text, variant, size }) {
           const card = document.createElement("div");
           card.className = `preview-card preview-component ${variant} size-${size}`;
           const h = document.createElement("h3");
-          h.textContent = title || "Title";
+          h.textContent = text || "Title";
           const p = document.createElement("p");
           p.textContent = "Example content";
           card.append(h, p);
@@ -968,15 +900,6 @@
 
           tokenRadius.value = state.tokens.radius;
           tokenRadiusValue.textContent = px(state.tokens.radius);
-
-          tokenSpacingSmall.value = state.tokens.spacingSmall;
-          tokenSpacingSmallValue.textContent = px(state.tokens.spacingSmall);
-
-          tokenSpacingMedium.value = state.tokens.spacingMedium;
-          tokenSpacingMediumValue.textContent = px(state.tokens.spacingMedium);
-
-          tokenSpacingLarge.value = state.tokens.spacingLarge;
-          tokenSpacingLargeValue.textContent = px(state.tokens.spacingLarge);
 
           applyTokensToPreview();
 
@@ -1041,33 +964,33 @@
           css += `  --token-secondary: ${t.secondary};\n`;
           css += `  --token-text: ${t.text};\n`;
           css += `  --token-border-radius: ${t.radius}px;\n`;
-          css += `  --token-spacing-small: ${t.spacingSmall}px;\n`;
-          css += `  --token-spacing-medium: ${t.spacingMedium}px;\n`;
-          css += `  --token-spacing-large: ${t.spacingLarge}px;\n`;
           for (const key in overrides) {
             css += `  ${key}: ${overrides[key]};\n`;
           }
           css += "}";
 
-          navigator.clipboard
-            .writeText(css)
-            .then(() => alert("CSS copied!"));
+          navigator.clipboard.writeText(css).then(() => alert("CSS copied!"));
         }
 
         function exportJSON() {
+          const preset = PRESETS[state.component][state.size];
+          const computedFontSize = preset.font + state.fontSizeAdjust;
+          const computedPadding = preset.pad + state.paddingAdjust;
+
           const exportData = {
             component: state.component,
             variant: state.variant,
             size: state.size,
             text: state.text,
             fontFamily: state.fontFamily,
-            fontSizeAdjust: state.fontSizeAdjust,
-            paddingAdjust: state.paddingAdjust,
+            fontSize: computedFontSize + "px", 
+            padding: computedPadding + "px", 
             radius: state.radius,
             bgColor: state.bgColor,
             textColor: state.textColor,
             tokens: state.tokens,
           };
+
           navigator.clipboard
             .writeText(JSON.stringify(exportData, null, 2))
             .then(() => alert("JSON copied!"));
@@ -1168,29 +1091,6 @@
           tokenRadius.addEventListener("input", () => {
             state.tokens.radius = tokenRadius.valueAsNumber;
             tokenRadiusValue.textContent = px(state.tokens.radius);
-            recordState();
-            renderFromState();
-          });
-
-          tokenSpacingSmall.addEventListener("input", () => {
-            state.tokens.spacingSmall = tokenSpacingSmall.valueAsNumber;
-            tokenSpacingSmallValue.textContent = px(state.tokens.spacingSmall);
-            recordState();
-            renderFromState();
-          });
-
-          tokenSpacingMedium.addEventListener("input", () => {
-            state.tokens.spacingMedium = tokenSpacingMedium.valueAsNumber;
-            tokenSpacingMediumValue.textContent = px(
-              state.tokens.spacingMedium
-            );
-            recordState();
-            renderFromState();
-          });
-
-          tokenSpacingLarge.addEventListener("input", () => {
-            state.tokens.spacingLarge = tokenSpacingLarge.valueAsNumber;
-            tokenSpacingLargeValue.textContent = px(state.tokens.spacingLarge);
             recordState();
             renderFromState();
           });
