@@ -177,7 +177,6 @@
       }
 
       .preview-component {
-        transition: all 160ms ease;
         --component-bg: unset;
         --component-text: unset;
         --component-border-radius: unset;
@@ -316,6 +315,27 @@
         --font-size-base: 26px;
         --padding-y-base: 16px;
         --padding-x-base: 20px;
+      }
+
+      .anim-hover-scale:hover {
+        transform: scale(1.04);
+        transition: transform 350ms ease;
+      }
+
+      .anim-hover-fade:hover {
+        opacity: 0.85;
+        transition: opacity 350ms ease;
+      }
+
+      .anim-hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+        transition: transform 350ms ease, box-shadow 350ms ease;
+      }
+
+      .anim-press-scale:active {
+        transform: scale(0.97);
+        transition: transform 200ms ease;
       }
 
       button:focus,
@@ -630,6 +650,17 @@
           </div>
 
           <div class="prop-group">
+            <label for="prop-animation">Animation</label>
+            <select id="prop-animation">
+              <option value="none">None</option>
+              <option value="hover-scale">Hover Scale</option>
+              <option value="hover-fade">Hover Fade</option>
+              <option value="hover-lift">Hover Lift</option>
+              <option value="press-scale">Press Scale</option>
+            </select>
+          </div>
+
+          <div class="prop-group">
             <label for="prop-bg-color">Background Color (component)</label>
             <input id="prop-bg-color" type="color" value="#4a78ff" />
           </div>
@@ -705,6 +736,7 @@
         const propPadding = document.getElementById("prop-padding");
         const propRadius = document.getElementById("prop-radius");
         const propFontFamily = document.getElementById("prop-font-family");
+        const propAnimation = document.getElementById("prop-animation");
         const propBgColor = document.getElementById("prop-bg-color");
         const propTextColor = document.getElementById("prop-text-color");
 
@@ -782,6 +814,7 @@
           },
 
           fontFamily: "system-ui",
+          animation: "none",
 
           tokens: {
             primary: "#4a78ff",
@@ -924,6 +957,8 @@
 
           propFontFamily.value = state.fontFamily;
 
+          propAnimation.value = state.animation;
+
           propBgColor.value = state.bgColor;
 
           const effectiveTextColor = state.overrides.textColor
@@ -955,6 +990,17 @@
           el.style.setProperty("--font-size-adjust", px(state.fontSizeAdjust));
           el.style.setProperty("--padding-adjust", px(state.paddingAdjust));
           el.style.fontFamily = state.fontFamily;
+
+          el.classList.remove(
+            "anim-hover-scale",
+            "anim-hover-fade",
+            "anim-hover-lift",
+            "anim-press-scale"
+          );
+
+          if (state.animation !== "none") {
+            el.classList.add(`anim-${state.animation}`);
+          }
 
           if (state.overrides.radius) {
             el.style.setProperty("--component-border-radius", px(state.radius));
@@ -1009,6 +1055,39 @@
           }
           css += "}";
 
+          if (state.animation !== "none") {
+            css += "\n";
+
+            if (state.animation === "hover-scale") {
+              css += `.preview-component:hover {
+  transform: scale(1.04);
+  transition: transform 350ms ease;
+}`;
+            }
+
+            if (state.animation === "hover-fade") {
+              css += `.preview-component:hover {
+  opacity: 0.85;
+  transition: opacity 350ms ease;
+}`;
+            }
+
+            if (state.animation === "hover-lift") {
+              css += `.preview-component:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
+  transition: transform 350ms ease, box-shadow 350ms ease;
+}`;
+            }
+
+            if (state.animation === "press-scale") {
+              css += `.preview-component:active {
+  transform: scale(0.97);
+  transition: transform 200ms ease;
+}`;
+            }
+          }
+
           navigator.clipboard.writeText(css).then(() => alert("CSS copied!"));
         }
 
@@ -1023,6 +1102,7 @@
             size: state.size,
             text: state.text,
             fontFamily: state.fontFamily,
+            animation: state.animation,
             fontSize: computedFontSize + "px",
             padding: computedPadding + "px",
             radius: state.radius,
@@ -1062,6 +1142,12 @@
 
           propFontFamily.addEventListener("input", () => {
             state.fontFamily = propFontFamily.value;
+            recordState();
+            renderFromState();
+          });
+
+          propAnimation.addEventListener("change", () => {
+            state.animation = propAnimation.value;
             recordState();
             renderFromState();
           });
