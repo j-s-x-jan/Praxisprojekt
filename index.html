@@ -1091,10 +1091,41 @@
           navigator.clipboard.writeText(css).then(() => alert("CSS copied!"));
         }
 
+        const ANIMATION_DEFINITIONS = {
+          none: null,
+
+          "hover-scale": {
+            trigger: "hover",
+            transform: "scale(1.04)",
+            transition: "transform 350ms ease",
+          },
+
+          "hover-fade": {
+            trigger: "hover",
+            opacity: 0.85,
+            transition: "opacity 350ms ease",
+          },
+
+          "hover-lift": {
+            trigger: "hover",
+            transform: "translateY(-4px)",
+            boxShadow: "0 10px 26px rgba(0, 0, 0, 0.12)",
+            transition: "transform 350ms ease, box-shadow 350ms ease",
+          },
+
+          "press-scale": {
+            trigger: "active",
+            transform: "scale(0.97)",
+            transition: "transform 200ms ease",
+          },
+        };
+
         function exportJSON() {
           const preset = PRESETS[state.component][state.size];
           const computedFontSize = preset.font + state.fontSizeAdjust;
           const computedPadding = preset.pad + state.paddingAdjust;
+
+          const animationDef = ANIMATION_DEFINITIONS[state.animation];
 
           const exportData = {
             component: state.component,
@@ -1102,7 +1133,14 @@
             size: state.size,
             text: state.text,
             fontFamily: state.fontFamily,
-            animation: state.animation,
+
+            animation: animationDef
+              ? {
+                  name: state.animation,
+                  ...animationDef,
+                }
+              : null,
+
             fontSize: computedFontSize + "px",
             padding: computedPadding + "px",
             radius: state.radius,
