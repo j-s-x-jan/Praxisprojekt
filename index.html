@@ -702,6 +702,92 @@
               >8px</span
             >
           </div>
+
+          <hr style="margin: 12px 0; opacity: 0.3" />
+
+          <div class="token-group">
+            <label>Small — Font Size</label>
+            <input
+              type="range"
+              id="token-size-small-font"
+              min="8"
+              max="48"
+              value="13"
+            />
+            <span class="value-display" id="token-size-small-font-value"
+              >13px</span
+            >
+          </div>
+
+          <div class="token-group">
+            <label>Small — Padding</label>
+            <input
+              type="range"
+              id="token-size-small-pad"
+              min="0"
+              max="80"
+              value="6"
+            />
+            <span class="value-display" id="token-size-small-pad-value"
+              >6px</span
+            >
+          </div>
+
+          <div class="token-group">
+            <label>Medium — Font Size</label>
+            <input
+              type="range"
+              id="token-size-medium-font"
+              min="8"
+              max="48"
+              value="16"
+            />
+            <span class="value-display" id="token-size-medium-font-value"
+              >16px</span
+            >
+          </div>
+
+          <div class="token-group">
+            <label>Medium — Padding</label>
+            <input
+              type="range"
+              id="token-size-medium-pad"
+              min="0"
+              max="80"
+              value="10"
+            />
+            <span class="value-display" id="token-size-medium-pad-value"
+              >10px</span
+            >
+          </div>
+
+          <div class="token-group">
+            <label>Large — Font Size</label>
+            <input
+              type="range"
+              id="token-size-large-font"
+              min="8"
+              max="72"
+              value="20"
+            />
+            <span class="value-display" id="token-size-large-font-value"
+              >20px</span
+            >
+          </div>
+
+          <div class="token-group">
+            <label>Large — Padding</label>
+            <input
+              type="range"
+              id="token-size-large-pad"
+              min="0"
+              max="120"
+              value="14"
+            />
+            <span class="value-display" id="token-size-large-pad-value"
+              >14px</span
+            >
+          </div>
         </details>
       </aside>
 
@@ -751,6 +837,44 @@
         const tokenRadiusValue = document.getElementById(
           "token-border-radius-value"
         );
+        const tokenSizeSmallFont = document.getElementById(
+          "token-size-small-font"
+        );
+        const tokenSizeSmallFontValue = document.getElementById(
+          "token-size-small-font-value"
+        );
+        const tokenSizeSmallPad = document.getElementById(
+          "token-size-small-pad"
+        );
+        const tokenSizeSmallPadValue = document.getElementById(
+          "token-size-small-pad-value"
+        );
+
+        const tokenSizeMediumFont = document.getElementById(
+          "token-size-medium-font"
+        );
+        const tokenSizeMediumFontValue = document.getElementById(
+          "token-size-medium-font-value"
+        );
+        const tokenSizeMediumPad = document.getElementById(
+          "token-size-medium-pad"
+        );
+        const tokenSizeMediumPadValue = document.getElementById(
+          "token-size-medium-pad-value"
+        );
+
+        const tokenSizeLargeFont = document.getElementById(
+          "token-size-large-font"
+        );
+        const tokenSizeLargeFontValue = document.getElementById(
+          "token-size-large-font-value"
+        );
+        const tokenSizeLargePad = document.getElementById(
+          "token-size-large-pad"
+        );
+        const tokenSizeLargePadValue = document.getElementById(
+          "token-size-large-pad-value"
+        );
 
         const exportCSSBtn = document.getElementById("export-css");
         const exportJSONBtn = document.getElementById("export-json");
@@ -778,6 +902,11 @@
             large: { font: 26, pad: 16 },
           },
         };
+
+        function getPreset(component, size) {
+          const tokenPreset = state.tokens.sizes[size];
+          return tokenPreset ?? PRESETS[component][size];
+        }
 
         function setRootVar(name, value) {
           document.documentElement.style.setProperty(name, value);
@@ -821,6 +950,12 @@
             secondary: "#335bef",
             text: "#ffffff",
             radius: 8,
+
+            sizes: {
+              small: { font: 13, pad: 6 },
+              medium: { font: 16, pad: 10 },
+              large: { font: 20, pad: 14 },
+            },
           },
         };
 
@@ -935,7 +1070,7 @@
           compVariant.value = state.variant;
           compSize.value = state.size;
 
-          const preset = PRESETS[state.component][state.size];
+          const preset = getPreset(state.component, state.size);
 
           propText.value = state.text;
 
@@ -974,6 +1109,29 @@
           tokenRadius.value = state.tokens.radius;
           tokenRadiusValue.textContent = px(state.tokens.radius);
 
+          tokenSizeSmallFont.value = state.tokens.sizes.small.font;
+          tokenSizeSmallFontValue.textContent = px(
+            state.tokens.sizes.small.font
+          );
+          tokenSizeSmallPad.value = state.tokens.sizes.small.pad;
+          tokenSizeSmallPadValue.textContent = px(state.tokens.sizes.small.pad);
+
+          tokenSizeMediumFont.value = state.tokens.sizes.medium.font;
+          tokenSizeMediumFontValue.textContent = px(
+            state.tokens.sizes.medium.font
+          );
+          tokenSizeMediumPad.value = state.tokens.sizes.medium.pad;
+          tokenSizeMediumPadValue.textContent = px(
+            state.tokens.sizes.medium.pad
+          );
+
+          tokenSizeLargeFont.value = state.tokens.sizes.large.font;
+          tokenSizeLargeFontValue.textContent = px(
+            state.tokens.sizes.large.font
+          );
+          tokenSizeLargePad.value = state.tokens.sizes.large.pad;
+          tokenSizeLargePadValue.textContent = px(state.tokens.sizes.large.pad);
+
           applyTokensToPreview();
 
           previewArea.innerHTML = "";
@@ -986,6 +1144,10 @@
           } else {
             el = createHeader(state);
           }
+
+          el.style.setProperty("--font-size-base", px(preset.font));
+          el.style.setProperty("--padding-y-base", px(preset.pad));
+          el.style.setProperty("--padding-x-base", px(preset.pad));
 
           el.style.setProperty("--font-size-adjust", px(state.fontSizeAdjust));
           el.style.setProperty("--padding-adjust", px(state.paddingAdjust));
@@ -1205,7 +1367,7 @@
           });
 
           propFontSize.addEventListener("input", () => {
-            const base = PRESETS[state.component][state.size].font;
+            const base = getPreset(state.component, state.size).font;
 
             state.fontSizeAdjust = propFontSize.valueAsNumber - base;
 
@@ -1214,7 +1376,7 @@
           });
 
           propPadding.addEventListener("input", () => {
-            const base = PRESETS[state.component][state.size].pad;
+            const base = getPreset(state.component, state.size).pad;
 
             state.paddingAdjust = propPadding.valueAsNumber - base;
 
@@ -1225,7 +1387,7 @@
           compSize.addEventListener("change", () => {
             state.size = compSize.value;
 
-            const preset = PRESETS[state.component][state.size];
+            const preset = getPreset(state.component, state.size);
 
             propFontSize.value = preset.font + state.fontSizeAdjust;
             propPadding.value = preset.pad + state.paddingAdjust;
@@ -1255,6 +1417,42 @@
           tokenRadius.addEventListener("input", () => {
             state.tokens.radius = tokenRadius.valueAsNumber;
             tokenRadiusValue.textContent = px(state.tokens.radius);
+            recordState();
+            renderFromState();
+          });
+
+          tokenSizeSmallFont.addEventListener("input", () => {
+            state.tokens.sizes.small.font = tokenSizeSmallFont.valueAsNumber;
+            recordState();
+            renderFromState();
+          });
+
+          tokenSizeSmallPad.addEventListener("input", () => {
+            state.tokens.sizes.small.pad = tokenSizeSmallPad.valueAsNumber;
+            recordState();
+            renderFromState();
+          });
+
+          tokenSizeMediumFont.addEventListener("input", () => {
+            state.tokens.sizes.medium.font = tokenSizeMediumFont.valueAsNumber;
+            recordState();
+            renderFromState();
+          });
+
+          tokenSizeMediumPad.addEventListener("input", () => {
+            state.tokens.sizes.medium.pad = tokenSizeMediumPad.valueAsNumber;
+            recordState();
+            renderFromState();
+          });
+
+          tokenSizeLargeFont.addEventListener("input", () => {
+            state.tokens.sizes.large.font = tokenSizeLargeFont.valueAsNumber;
+            recordState();
+            renderFromState();
+          });
+
+          tokenSizeLargePad.addEventListener("input", () => {
+            state.tokens.sizes.large.pad = tokenSizeLargePad.valueAsNumber;
             recordState();
             renderFromState();
           });
