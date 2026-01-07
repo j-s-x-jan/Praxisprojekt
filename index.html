@@ -620,7 +620,7 @@
               id="prop-font-size"
               type="range"
               min="8"
-              max="72"
+              max="48"
               value="16"
             />
             <span class="value-display" id="font-size-value">16px</span>
@@ -628,7 +628,7 @@
 
           <div class="prop-group">
             <label for="prop-padding">Padding</label>
-            <input id="prop-padding" type="range" min="0" max="120" value="10" />
+            <input id="prop-padding" type="range" min="0" max="80" value="10" />
             <span class="value-display" id="padding-value">10px</span>
           </div>
 
@@ -711,7 +711,7 @@
               type="range"
               id="token-size-small-font"
               min="8"
-              max="72"
+              max="48"
               value="13"
             />
             <span class="value-display" id="token-size-small-font-value"
@@ -725,7 +725,7 @@
               type="range"
               id="token-size-small-pad"
               min="0"
-              max="120"
+              max="80"
               value="6"
             />
             <span class="value-display" id="token-size-small-pad-value"
@@ -739,7 +739,7 @@
               type="range"
               id="token-size-medium-font"
               min="8"
-              max="72"
+              max="48"
               value="16"
             />
             <span class="value-display" id="token-size-medium-font-value"
@@ -753,7 +753,7 @@
               type="range"
               id="token-size-medium-pad"
               min="0"
-              max="120"
+              max="80"
               value="10"
             />
             <span class="value-display" id="token-size-medium-pad-value"
@@ -767,7 +767,7 @@
               type="range"
               id="token-size-large-font"
               min="8"
-              max="72"
+              max="48"
               value="20"
             />
             <span class="value-display" id="token-size-large-font-value"
@@ -781,7 +781,7 @@
               type="range"
               id="token-size-large-pad"
               min="0"
-              max="120"
+              max="80"
               value="14"
             />
             <span class="value-display" id="token-size-large-pad-value"
@@ -792,7 +792,7 @@
       </aside>
 
       <section id="center-preview">
-        <div id="preview-area">Preview will appear here…</div>
+        <div id="preview-area"></div>
       </section>
 
       <aside id="sidebar-right">
@@ -940,6 +940,8 @@
             radius: false,
             bgColor: false,
             textColor: false,
+            fontSize: false,
+            padding: false,
           },
 
           fontFamily: "system-ui",
@@ -1370,6 +1372,7 @@
             const base = getPreset(state.component, state.size).font;
 
             state.fontSizeAdjust = propFontSize.valueAsNumber - base;
+            state.overrides.fontSize = true;
 
             recordState();
             renderFromState();
@@ -1379,6 +1382,7 @@
             const base = getPreset(state.component, state.size).pad;
 
             state.paddingAdjust = propPadding.valueAsNumber - base;
+            state.overrides.padding = true;
 
             recordState();
             renderFromState();
@@ -1387,10 +1391,15 @@
           compSize.addEventListener("change", () => {
             state.size = compSize.value;
 
+            state.overrides.fontSize = false;
+            state.overrides.padding = false;
+            state.fontSizeAdjust = 0;
+            state.paddingAdjust = 0;
+
             const preset = getPreset(state.component, state.size);
 
-            propFontSize.value = preset.font + state.fontSizeAdjust;
-            propPadding.value = preset.pad + state.paddingAdjust;
+            propFontSize.value = preset.font;
+            propPadding.value = preset.pad;
 
             recordState();
             renderFromState();
@@ -1422,39 +1431,51 @@
           });
 
           tokenSizeSmallFont.addEventListener("input", () => {
-            state.tokens.sizes.small.font = tokenSizeSmallFont.valueAsNumber;
+            const v = tokenSizeSmallFont.valueAsNumber;
+            state.tokens.sizes.small.font = v;
+            tokenSizeSmallFontValue.textContent = px(v); 
             recordState();
-            renderFromState();
-          });
-
-          tokenSizeSmallPad.addEventListener("input", () => {
-            state.tokens.sizes.small.pad = tokenSizeSmallPad.valueAsNumber;
-            recordState();
-            renderFromState();
+            if (!state.overrides.fontSize) renderFromState(); 
           });
 
           tokenSizeMediumFont.addEventListener("input", () => {
-            state.tokens.sizes.medium.font = tokenSizeMediumFont.valueAsNumber;
+            const v = tokenSizeMediumFont.valueAsNumber;
+            state.tokens.sizes.medium.font = v;
+            tokenSizeMediumFontValue.textContent = px(v);
             recordState();
-            renderFromState();
-          });
-
-          tokenSizeMediumPad.addEventListener("input", () => {
-            state.tokens.sizes.medium.pad = tokenSizeMediumPad.valueAsNumber;
-            recordState();
-            renderFromState();
+            if (!state.overrides.fontSize) renderFromState();
           });
 
           tokenSizeLargeFont.addEventListener("input", () => {
-            state.tokens.sizes.large.font = tokenSizeLargeFont.valueAsNumber;
+            const v = tokenSizeLargeFont.valueAsNumber;
+            state.tokens.sizes.large.font = v;
+            tokenSizeLargeFontValue.textContent = px(v);
             recordState();
-            renderFromState();
+            if (!state.overrides.fontSize) renderFromState();
+          });
+
+          tokenSizeSmallPad.addEventListener("input", () => {
+            const v = tokenSizeSmallPad.valueAsNumber;
+            state.tokens.sizes.small.pad = v;
+            tokenSizeSmallPadValue.textContent = px(v);
+            recordState();
+            if (!state.overrides.padding) renderFromState();
+          });
+
+          tokenSizeMediumPad.addEventListener("input", () => {
+            const v = tokenSizeMediumPad.valueAsNumber;
+            state.tokens.sizes.medium.pad = v;
+            tokenSizeMediumPadValue.textContent = px(v);
+            recordState();
+            if (!state.overrides.padding) renderFromState();
           });
 
           tokenSizeLargePad.addEventListener("input", () => {
-            state.tokens.sizes.large.pad = tokenSizeLargePad.valueAsNumber;
+            const v = tokenSizeLargePad.valueAsNumber;
+            state.tokens.sizes.large.pad = v;
+            tokenSizeLargePadValue.textContent = px(v);
             recordState();
-            renderFromState();
+            if (!state.overrides.padding) renderFromState();
           });
 
           exportCSSBtn.addEventListener("click", exportCSS);
@@ -1471,10 +1492,14 @@
             const tokens = deepCopy(state.tokens);
 
             state = deepCopy(history[0]);
+
             state.component = comp;
             state.variant = variant;
             state.size = size;
             state.tokens = tokens;
+
+            state.overrides.fontSize = false;
+            state.overrides.padding = false;
 
             renderFromState();
           });
