@@ -10,11 +10,23 @@
         --color-secondary: #335bef;
         --color-text: #222222;
         --color-bg: #ffffff;
+
         --border-radius: 8px;
+
         --spacing-small: 8px;
         --spacing-medium: 16px;
         --spacing-large: 24px;
+
         --font-base: 16px;
+
+        --font-size-small: 13px;
+        --font-size-medium: 16px;
+        --font-size-large: 20px;
+
+        --padding-small: 6px;
+        --padding-medium: 10px;
+        --padding-large: 14px;
+
         --panel-bg: #ffffff;
         --muted: #777;
       }
@@ -954,9 +966,9 @@
             radius: 8,
 
             sizes: {
-              small: { font: 13, pad: 6 },
-              medium: { font: 16, pad: 10 },
-              large: { font: 20, pad: 14 },
+              small: { font: 13, padding: 6 },
+              medium: { font: 16, padding: 10 },
+              large: { font: 20, padding: 14 },
             },
           },
         };
@@ -1077,7 +1089,7 @@
           propText.value = state.text;
 
           const effectiveFontSize = preset.font + state.fontSizeAdjust;
-          const effectivePadding = preset.pad + state.paddingAdjust;
+          const effectivePadding = preset.padding + state.paddingAdjust;
 
           propFontSize.value = effectiveFontSize;
           propPadding.value = effectivePadding;
@@ -1115,24 +1127,24 @@
           tokenSizeSmallFontValue.textContent = px(
             state.tokens.sizes.small.font
           );
-          tokenSizeSmallPad.value = state.tokens.sizes.small.pad;
-          tokenSizeSmallPadValue.textContent = px(state.tokens.sizes.small.pad);
+          tokenSizeSmallPad.value = state.tokens.sizes.small.padding;
+          tokenSizeSmallPadValue.textContent = px(state.tokens.sizes.small.padding);
 
           tokenSizeMediumFont.value = state.tokens.sizes.medium.font;
           tokenSizeMediumFontValue.textContent = px(
             state.tokens.sizes.medium.font
           );
-          tokenSizeMediumPad.value = state.tokens.sizes.medium.pad;
+          tokenSizeMediumPad.value = state.tokens.sizes.medium.padding;
           tokenSizeMediumPadValue.textContent = px(
-            state.tokens.sizes.medium.pad
+            state.tokens.sizes.medium.padding
           );
 
           tokenSizeLargeFont.value = state.tokens.sizes.large.font;
           tokenSizeLargeFontValue.textContent = px(
             state.tokens.sizes.large.font
           );
-          tokenSizeLargePad.value = state.tokens.sizes.large.pad;
-          tokenSizeLargePadValue.textContent = px(state.tokens.sizes.large.pad);
+          tokenSizeLargePad.value = state.tokens.sizes.large.padding;
+          tokenSizeLargePadValue.textContent = px(state.tokens.sizes.large.padding);
 
           applyTokensToPreview();
 
@@ -1148,8 +1160,8 @@
           }
 
           el.style.setProperty("--font-size-base", px(preset.font));
-          el.style.setProperty("--padding-y-base", px(preset.pad));
-          el.style.setProperty("--padding-x-base", px(preset.pad));
+          el.style.setProperty("--padding-y-base", px(preset.padding));
+          el.style.setProperty("--padding-x-base", px(preset.padding));
 
           el.style.setProperty("--font-size-adjust", px(state.fontSizeAdjust));
           el.style.setProperty("--padding-adjust", px(state.paddingAdjust));
@@ -1205,15 +1217,22 @@
           if (state.overrides.radius)
             overrides["--component-border-radius"] = state.radius + "px";
           if (state.overrides.bgColor)
-            overrides["--component-bg"] = state.bgColor;
+            overrides["--component-background-color"] = state.bgColor;
           if (state.overrides.textColor)
-            overrides["--component-text"] = state.textColor;
+            overrides["--component-text-color"] = state.textColor;
 
           let css = ":root {\n";
           css += `  --token-primary: ${t.primary};\n`;
           css += `  --token-secondary: ${t.secondary};\n`;
           css += `  --token-text: ${t.text};\n`;
           css += `  --token-border-radius: ${t.radius}px;\n`;
+          css += `  --token-font-small: ${t.sizes.small.font}px;\n`;
+          css += `  --token-padding-small: ${t.sizes.small.padding}px;\n`;
+          css += `  --token-font-medium: ${t.sizes.medium.font}px;\n`;
+          css += `  --token-padding-medium: ${t.sizes.medium.padding}px;\n`;
+          css += `  --token-font-large: ${t.sizes.large.font}px;\n`;
+          css += `  --token-padding-large: ${t.sizes.large.padding}px;\n`;
+
           for (const key in overrides) {
             css += `  ${key}: ${overrides[key]};\n`;
           }
@@ -1379,7 +1398,7 @@
           });
 
           propPadding.addEventListener("input", () => {
-            const base = getPreset(state.component, state.size).pad;
+            const base = getPreset(state.component, state.size).padding;
 
             state.paddingAdjust = propPadding.valueAsNumber - base;
             state.overrides.padding = true;
@@ -1399,7 +1418,7 @@
             const preset = getPreset(state.component, state.size);
 
             propFontSize.value = preset.font;
-            propPadding.value = preset.pad;
+            propPadding.value = preset.padding;
 
             recordState();
             renderFromState();
@@ -1433,9 +1452,9 @@
           tokenSizeSmallFont.addEventListener("input", () => {
             const v = tokenSizeSmallFont.valueAsNumber;
             state.tokens.sizes.small.font = v;
-            tokenSizeSmallFontValue.textContent = px(v); 
+            tokenSizeSmallFontValue.textContent = px(v);
             recordState();
-            if (!state.overrides.fontSize) renderFromState(); 
+            if (!state.overrides.fontSize) renderFromState();
           });
 
           tokenSizeMediumFont.addEventListener("input", () => {
@@ -1456,7 +1475,7 @@
 
           tokenSizeSmallPad.addEventListener("input", () => {
             const v = tokenSizeSmallPad.valueAsNumber;
-            state.tokens.sizes.small.pad = v;
+            state.tokens.sizes.small.padding = v;
             tokenSizeSmallPadValue.textContent = px(v);
             recordState();
             if (!state.overrides.padding) renderFromState();
@@ -1464,7 +1483,7 @@
 
           tokenSizeMediumPad.addEventListener("input", () => {
             const v = tokenSizeMediumPad.valueAsNumber;
-            state.tokens.sizes.medium.pad = v;
+            state.tokens.sizes.medium.padding = v;
             tokenSizeMediumPadValue.textContent = px(v);
             recordState();
             if (!state.overrides.padding) renderFromState();
@@ -1472,7 +1491,7 @@
 
           tokenSizeLargePad.addEventListener("input", () => {
             const v = tokenSizeLargePad.valueAsNumber;
-            state.tokens.sizes.large.pad = v;
+            state.tokens.sizes.large.padding = v;
             tokenSizeLargePadValue.textContent = px(v);
             recordState();
             if (!state.overrides.padding) renderFromState();
