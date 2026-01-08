@@ -807,6 +807,8 @@
         <button id="undo-btn">Undo</button>
         <button id="redo-btn">Redo</button>
         <button id="reset-btn">Reset Properties</button>
+        <button id="clearAllBtn">Reset All Settings</button>
+
         <div
           id="contrast-warning"
           style="color: red; font-size: 13px; margin-top: 10px"
@@ -886,9 +888,50 @@
         const undoBtn = document.getElementById("undo-btn");
         const redoBtn = document.getElementById("redo-btn");
         const resetBtn = document.getElementById("reset-btn");
+        const clearAllBtn = document.getElementById("clearAllBtn");
 
         const px = (v) => v + "px";
         const deepCopy = (o) => JSON.parse(JSON.stringify(o));
+
+        const STORAGE_KEY = "ui-configurator-state-v1";
+
+        function mergeDeep(target, source) {
+          for (const key in source) {
+            if (
+              source[key] &&
+              typeof source[key] === "object" &&
+              !Array.isArray(source[key])
+            ) {
+              if (!target[key] || typeof target[key] !== "object") {
+                target[key] = {};
+              }
+              mergeDeep(target[key], source[key]);
+            } else {
+              target[key] = source[key];
+            }
+          }
+        }
+
+        function saveStateToStorage() {
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          } catch (err) {
+            console.warn("Could not save state to localStorage:", err);
+          }
+        }
+
+        function loadStateFromStorage() {
+          try {
+            const raw = localStorage.getItem(STORAGE_KEY);
+            if (!raw) return false;
+            const parsed = JSON.parse(raw);
+            mergeDeep(state, parsed);
+            return true;
+          } catch (err) {
+            console.warn("Could not load state from localStorage:", err);
+            return false;
+          }
+        }
 
         const PRESETS = {
           button: {
@@ -974,6 +1017,7 @@
           history.push(deepCopy(state));
           historyIndex++;
           updateUndoRedoButtons();
+          saveStateToStorage();
         }
 
         function undo() {
@@ -1121,7 +1165,9 @@
             state.tokens.sizes.small.font
           );
           tokenSizeSmallPad.value = state.tokens.sizes.small.padding;
-          tokenSizeSmallPadValue.textContent = px(state.tokens.sizes.small.padding);
+          tokenSizeSmallPadValue.textContent = px(
+            state.tokens.sizes.small.padding
+          );
 
           tokenSizeMediumFont.value = state.tokens.sizes.medium.font;
           tokenSizeMediumFontValue.textContent = px(
@@ -1137,7 +1183,9 @@
             state.tokens.sizes.large.font
           );
           tokenSizeLargePad.value = state.tokens.sizes.large.padding;
-          tokenSizeLargePadValue.textContent = px(state.tokens.sizes.large.padding);
+          tokenSizeLargePadValue.textContent = px(
+            state.tokens.sizes.large.padding
+          );
 
           applyTokensToPreview();
 
@@ -1203,7 +1251,7 @@
               state.fontSizeAdjust +
               "px",
             "--component-padding":
-              PRESETS[state.component][state.size].pad +
+              PRESETS[state.component][state.size].padding +
               state.paddingAdjust +
               "px",
           };
@@ -1299,7 +1347,7 @@
         function exportJSON() {
           const preset = PRESETS[state.component][state.size];
           const computedFontSize = preset.font + state.fontSizeAdjust;
-          const computedPadding = preset.pad + state.paddingAdjust;
+          const computedPadding = preset.padding + state.paddingAdjust;
 
           const animationDef = ANIMATION_DEFINITIONS[state.animation];
 
@@ -1496,15 +1544,12 @@
           redoBtn.addEventListener("click", redo);
 
           resetBtn.addEventListener("click", () => {
-            recordState();
-
             const comp = state.component;
             const variant = state.variant;
             const size = state.size;
             const tokens = deepCopy(state.tokens);
 
             state = deepCopy(history[0]);
-
             state.component = comp;
             state.variant = variant;
             state.size = size;
@@ -1514,10 +1559,63 @@
             state.overrides.padding = false;
 
             renderFromState();
+            recordState();
+          });
+
+          clearAllBtn.addEventListener("click", () => {
+            const confirmed = confirm(
+              "Reset to default settings? All customizations will be permanently removed."
+            );
+            if (!confirmed) return;
+
+            localStorage.removeItem(STORAGE_KEY);
+
+            state = {
+              component: "button",
+              variant: "primary",
+              size: "medium",
+              text: "",
+              fontSizeAdjust: 0,
+              paddingAdjust: 0,
+
+              radius: 8,
+              bgColor: "#4a78ff",
+              textColor: "#ffffff",
+
+              overrides: {
+                radius: false,
+                bgColor: false,
+                textColor: false,
+                fontSize: false,
+                padding: false,
+              },
+
+              fontFamily: "system-ui",
+              animation: "none",
+
+              tokens: {
+                primary: "#4a78ff",
+                secondary: "#335bef",
+                text: "#ffffff",
+                radius: 8,
+                sizes: {
+                  small: { font: 13, padding: 6 },
+                  medium: { font: 16, padding: 10 },
+                  large: { font: 20, padding: 14 },
+                },
+              },
+            };
+
+            history = [deepCopy(state)];
+            historyIndex = 0;
+
+            renderFromState();
+            updateUndoRedoButtons();
           });
         }
 
         function init() {
+          loadStateFromStorage();
           history = [deepCopy(state)];
           historyIndex = 0;
           attachListeners();
