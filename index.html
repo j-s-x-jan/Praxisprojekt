@@ -648,9 +648,19 @@
             <select id="prop-font-family">
               <option value="system-ui">System UI</option>
               <option value="Arial">Arial</option>
-              <option value="Roboto">Roboto</option>
-              <option value="Inter">Inter</option>
+              <option value="Helvetica">Helvetica</option>
+              <option value="Verdana">Verdana</option>
+              <option value="Tahoma">Tahoma</option>
+              <option value="Trebuchet MS">Trebuchet MS</option>
               <option value="Georgia">Georgia</option>
+              <option value="Times New Roman">Times New Roman</option>
+              <option value="Palatino Linotype">Palatino</option>
+              <option value="Courier New">Courier New</option>
+              <option value="Lucida Console">Lucida Console</option>
+              <option value="Impact">Impact</option>
+              <option value="Futura">Futura</option>
+              <option value="Gill Sans">Gill Sans</option>
+              <option value="Comic Sans MS">Comic Sans MS</option>
             </select>
           </div>
 
@@ -1564,7 +1574,7 @@
 
           clearAllBtn.addEventListener("click", () => {
             const confirmed = confirm(
-              "Reset to default settings? All customizations will be permanently removed."
+              "Resetting all settings will restore the default configuration and permanently remove all user customizations. Do you wish to continue?"
             );
             if (!confirmed) return;
 
