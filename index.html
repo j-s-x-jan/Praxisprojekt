@@ -329,25 +329,33 @@
         --padding-x-base: 20px;
       }
 
-      .anim-hover-scale:hover {
-        transform: scale(1.04);
+      .anim-hover-scale {
         transition: transform 350ms ease;
       }
-
-      .anim-hover-fade:hover {
-        opacity: 0.85;
-        transition: opacity 350ms ease;
+      .anim-hover-scale:hover {
+        transform: scale(1.04);
       }
 
+      .anim-hover-fade {
+        transition: opacity 350ms ease;
+      }
+      .anim-hover-fade:hover {
+        opacity: 0.85;
+      }
+
+      .anim-hover-lift {
+        transition: transform 350ms ease, box-shadow 350ms ease;
+      }
       .anim-hover-lift:hover {
         transform: translateY(-4px);
         box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
-        transition: transform 350ms ease, box-shadow 350ms ease;
       }
 
+      .anim-press-scale {
+        transition: transform 200ms ease;
+      }
       .anim-press-scale:active {
         transform: scale(0.97);
-        transition: transform 200ms ease;
       }
 
       button:focus,
@@ -676,12 +684,12 @@
           </div>
 
           <div class="prop-group">
-            <label for="prop-bg-color">Background Color (component)</label>
+            <label for="prop-bg-color">Background Color</label>
             <input id="prop-bg-color" type="color" value="#4a78ff" />
           </div>
 
           <div class="prop-group">
-            <label for="prop-text-color">Text Color (component)</label>
+            <label for="prop-text-color">Text Color</label>
             <input id="prop-text-color" type="color" value="#ffffff" />
           </div>
         </details>
@@ -690,12 +698,12 @@
           <summary>Design Tokens</summary>
 
           <div class="token-group">
-            <label for="token-primary-color">Primary Color</label>
+            <label for="token-primary-color">Primary Background Color</label>
             <input type="color" id="token-primary-color" value="#4a78ff" />
           </div>
 
           <div class="token-group">
-            <label for="token-secondary-color">Secondary Color</label>
+            <label for="token-secondary-color">Secondary Background Color</label>
             <input type="color" id="token-secondary-color" value="#335bef" />
           </div>
 
@@ -902,7 +910,6 @@
 
         const px = (v) => v + "px";
         const deepCopy = (o) => JSON.parse(JSON.stringify(o));
-
         const STORAGE_KEY = "ui-configurator-state-v1";
 
         function mergeDeep(target, source) {
@@ -1290,76 +1297,16 @@
           css += "}";
 
           if (state.animation !== "none") {
-            css += "\n";
-
-            if (state.animation === "hover-scale") {
-              css += `.preview-component:hover {
-  transform: scale(1.04);
-  transition: transform 350ms ease;
-}`;
-            }
-
-            if (state.animation === "hover-fade") {
-              css += `.preview-component:hover {
-  opacity: 0.85;
-  transition: opacity 350ms ease;
-}`;
-            }
-
-            if (state.animation === "hover-lift") {
-              css += `.preview-component:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.12);
-  transition: transform 350ms ease, box-shadow 350ms ease;
-}`;
-            }
-
-            if (state.animation === "press-scale") {
-              css += `.preview-component:active {
-  transform: scale(0.97);
-  transition: transform 200ms ease;
-}`;
-            }
+            css += `\n\n/* Requires animation preset: .anim-${state.animation} */`;
           }
 
           navigator.clipboard.writeText(css).then(() => alert("CSS copied!"));
         }
 
-        const ANIMATION_DEFINITIONS = {
-          none: null,
-
-          "hover-scale": {
-            trigger: "hover",
-            transform: "scale(1.04)",
-            transition: "transform 350ms ease",
-          },
-
-          "hover-fade": {
-            trigger: "hover",
-            opacity: 0.85,
-            transition: "opacity 350ms ease",
-          },
-
-          "hover-lift": {
-            trigger: "hover",
-            transform: "translateY(-4px)",
-            boxShadow: "0 10px 26px rgba(0, 0, 0, 0.12)",
-            transition: "transform 350ms ease, box-shadow 350ms ease",
-          },
-
-          "press-scale": {
-            trigger: "active",
-            transform: "scale(0.97)",
-            transition: "transform 200ms ease",
-          },
-        };
-
         function exportJSON() {
           const preset = PRESETS[state.component][state.size];
           const computedFontSize = preset.font + state.fontSizeAdjust;
           const computedPadding = preset.padding + state.paddingAdjust;
-
-          const animationDef = ANIMATION_DEFINITIONS[state.animation];
 
           const exportData = {
             component: state.component,
@@ -1367,14 +1314,7 @@
             size: state.size,
             text: state.text,
             fontFamily: state.fontFamily,
-
-            animation: animationDef
-              ? {
-                  name: state.animation,
-                  ...animationDef,
-                }
-              : null,
-
+            animation: state.animation !== "none" ? state.animation : null,
             fontSize: computedFontSize + "px",
             padding: computedPadding + "px",
             radius: state.radius,
