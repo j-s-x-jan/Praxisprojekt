@@ -319,6 +319,102 @@ input[type="range"] {
   --padding-x-base: 20px;
 }
 
+.preview-badge {
+  display: inline-block;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: var(--component-border-radius, var(--token-border-radius));
+  padding: calc(var(--padding-y-base) + var(--padding-adjust, 0px))
+    calc(var(--padding-x-base) + var(--padding-adjust, 0px));
+  font-size: calc(var(--font-size-base) + var(--font-size-adjust, 0px));
+}
+
+.preview-badge.primary {
+  background: var(--component-bg, var(--token-primary));
+  color: var(--component-text, var(--token-text));
+}
+
+.preview-badge.secondary {
+  background: var(--component-bg, var(--token-secondary));
+  color: var(--component-text, var(--token-text));
+}
+
+.preview-badge.outlined {
+  background: transparent;
+  color: var(--component-text, var(--token-primary));
+  border: 1px solid var(--token-primary);
+}
+
+.preview-badge.size-small {
+  --font-size-base: 12px;
+  --padding-y-base: 4px;
+  --padding-x-base: 8px;
+}
+
+.preview-badge.size-medium {
+  --font-size-base: 14px;
+  --padding-y-base: 6px;
+  --padding-x-base: 10px;
+}
+
+.preview-badge.size-large {
+  --font-size-base: 16px;
+  --padding-y-base: 8px;
+  --padding-x-base: 12px;
+}
+
+.preview-alert {
+  width: 100%;
+  display: block;
+  border-radius: var(--component-border-radius, var(--token-border-radius));
+  padding: calc(var(--padding-y-base) + var(--padding-adjust, 0px))
+    calc(var(--padding-x-base) + var(--padding-adjust, 0px));
+  font-size: calc(var(--font-size-base) + var(--font-size-adjust, 0px));
+  box-sizing: border-box;
+  border-left-width: 4px;
+  border-left-style: solid;
+  border-left-color: transparent;
+}
+
+.preview-alert.primary {
+  background: var(--component-bg, var(--token-primary));
+  color: var(--component-text, var(--token-text));
+  border-left-color: rgba(0, 0, 0, 0.08);
+}
+
+.preview-alert.secondary {
+  background: var(--component-bg, var(--token-secondary));
+  color: var(--component-text, var(--token-text));
+  border-left-color: rgba(0, 0, 0, 0.08);
+}
+
+.preview-alert.outlined {
+  background: transparent;
+  color: var(--component-text, var(--token-primary));
+  border: 1px solid var(--token-primary);
+  border-left-width: 4px;
+  border-left-color: var(--token-primary);
+}
+
+.preview-alert.size-small {
+  --font-size-base: 14px;
+  --padding-y-base: 8px;
+  --padding-x-base: 12px;
+}
+
+.preview-alert.size-medium {
+  --font-size-base: 16px;
+  --padding-y-base: 12px;
+  --padding-x-base: 16px;
+}
+
+.preview-alert.size-large {
+  --font-size-base: 18px;
+  --padding-y-base: 16px;
+  --padding-x-base: 20px;
+}
+
 .anim-hover-scale {
   transition: transform 350ms ease;
 }
@@ -477,6 +573,38 @@ a:focus {
     --padding-x-base: 14px;
   }
 
+  .preview-badge.size-small {
+    --font-size-base: 11px;
+    --padding-y-base: 4px;
+    --padding-x-base: 8px;
+  }
+  .preview-badge.size-medium {
+    --font-size-base: 13px;
+    --padding-y-base: 6px;
+    --padding-x-base: 10px;
+  }
+  .preview-badge.size-large {
+    --font-size-base: 15px;
+    --padding-y-base: 8px;
+    --padding-x-base: 12px;
+  }
+
+  .preview-alert.size-small {
+    --font-size-base: 13px;
+    --padding-y-base: 8px;
+    --padding-x-base: 10px;
+  }
+  .preview-alert.size-medium {
+    --font-size-base: 15px;
+    --padding-y-base: 10px;
+    --padding-x-base: 12px;
+  }
+  .preview-alert.size-large {
+    --font-size-base: 17px;
+    --padding-y-base: 12px;
+    --padding-x-base: 14px;
+  }
+
   .preview-nav {
     gap: 10px;
     flex-wrap: wrap;
@@ -566,6 +694,38 @@ a:focus {
 
   .preview-header.size-large {
     --font-size-base: 18px;
+    --padding-y-base: 10px;
+    --padding-x-base: 12px;
+  }
+
+  .preview-badge.size-small {
+    --font-size-base: 10px;
+    --padding-y-base: 3px;
+    --padding-x-base: 7px;
+  }
+  .preview-badge.size-medium {
+    --font-size-base: 12px;
+    --padding-y-base: 5px;
+    --padding-x-base: 9px;
+  }
+  .preview-badge.size-large {
+    --font-size-base: 14px;
+    --padding-y-base: 7px;
+    --padding-x-base: 11px;
+  }
+
+  .preview-alert.size-small {
+    --font-size-base: 12px;
+    --padding-y-base: 7px;
+    --padding-x-base: 9px;
+  }
+  .preview-alert.size-medium {
+    --font-size-base: 13px;
+    --padding-y-base: 8px;
+    --padding-x-base: 10px;
+  }
+  .preview-alert.size-large {
+    --font-size-base: 15px;
     --padding-y-base: 10px;
     --padding-x-base: 12px;
   }

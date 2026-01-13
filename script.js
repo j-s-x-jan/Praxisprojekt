@@ -115,6 +115,16 @@
       medium: { font: 20, padding: 12 },
       large: { font: 26, padding: 16 },
     },
+    badge: {
+      small: { font: 12, padding: 6 },
+      medium: { font: 14, padding: 8 },
+      large: { font: 16, padding: 10 },
+    },
+    alert: {
+      small: { font: 14, padding: 10 },
+      medium: { font: 16, padding: 14 },
+      large: { font: 18, padding: 18 },
+    },
   };
 
   function getPreset(component, size) {
@@ -230,6 +240,20 @@
     h.className = `preview-header preview-component ${variant} size-${size}`;
     h.textContent = text || "Heading";
     return h;
+  }
+
+  function createBadge({ text, variant, size }) {
+    const badge = document.createElement("span");
+    badge.className = `preview-badge preview-component ${variant} size-${size}`;
+    badge.textContent = text || "Badge";
+    return badge;
+  }
+
+  function createAlert({ text, variant, size }) {
+    const alert = document.createElement("div");
+    alert.className = `preview-alert preview-component ${variant} size-${size}`;
+    alert.textContent = text || "Alert message";
+    return alert;
   }
 
   function hexToRgb(hex) {
@@ -348,8 +372,12 @@
       el = createButton(state);
     } else if (state.component === "card") {
       el = createCard(state);
-    } else {
+    } else if (state.component === "header") {
       el = createHeader(state);
+    } else if (state.component === "badge") {
+      el = createBadge(state);
+    } else if (state.component === "alert") {
+      el = createAlert(state);
     }
 
     el.style.setProperty("--font-size-base", px(preset.font));
