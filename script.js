@@ -9,7 +9,10 @@
   const propText2Group = document.getElementById("prop-text-2-group");
   const propText2 = document.getElementById("prop-text-2");
   const propFontSize = document.getElementById("prop-font-size");
-  const propPadding = document.getElementById("prop-padding");
+  const propPaddingX = document.getElementById("prop-padding-x");
+  const propPaddingY = document.getElementById("prop-padding-y");
+  const paddingXValue = document.getElementById("padding-x-value");
+  const paddingYValue = document.getElementById("padding-y-value");
   const propRadius = document.getElementById("prop-radius");
   const propFontFamily = document.getElementById("prop-font-family");
   const propAnimation = document.getElementById("prop-animation");
@@ -29,27 +32,43 @@
   const tokenSizeSmallFontValue = document.getElementById(
     "token-size-small-font-value"
   );
-  const tokenSizeSmallPad = document.getElementById("token-size-small-pad");
-  const tokenSizeSmallPadValue = document.getElementById(
-    "token-size-small-pad-value"
+  const tokenSizeSmallPadX = document.getElementById("token-size-small-pad-x");
+  const tokenSizeSmallPadXValue = document.getElementById(
+    "token-size-small-pad-x-value"
+  );
+  const tokenSizeSmallPadY = document.getElementById("token-size-small-pad-y");
+  const tokenSizeSmallPadYValue = document.getElementById(
+    "token-size-small-pad-y-value"
   );
 
   const tokenSizeMediumFont = document.getElementById("token-size-medium-font");
   const tokenSizeMediumFontValue = document.getElementById(
     "token-size-medium-font-value"
   );
-  const tokenSizeMediumPad = document.getElementById("token-size-medium-pad");
-  const tokenSizeMediumPadValue = document.getElementById(
-    "token-size-medium-pad-value"
+  const tokenSizeMediumPadX = document.getElementById(
+    "token-size-medium-pad-x"
+  );
+  const tokenSizeMediumPadXValue = document.getElementById(
+    "token-size-medium-pad-x-value"
+  );
+  const tokenSizeMediumPadY = document.getElementById(
+    "token-size-medium-pad-y"
+  );
+  const tokenSizeMediumPadYValue = document.getElementById(
+    "token-size-medium-pad-y-value"
   );
 
   const tokenSizeLargeFont = document.getElementById("token-size-large-font");
   const tokenSizeLargeFontValue = document.getElementById(
     "token-size-large-font-value"
   );
-  const tokenSizeLargePad = document.getElementById("token-size-large-pad");
-  const tokenSizeLargePadValue = document.getElementById(
-    "token-size-large-pad-value"
+  const tokenSizeLargePadX = document.getElementById("token-size-large-pad-x");
+  const tokenSizeLargePadXValue = document.getElementById(
+    "token-size-large-pad-x-value"
+  );
+  const tokenSizeLargePadY = document.getElementById("token-size-large-pad-y");
+  const tokenSizeLargePadYValue = document.getElementById(
+    "token-size-large-pad-y-value"
   );
 
   const exportCSSBtn = document.getElementById("export-css");
@@ -103,29 +122,29 @@
 
   const PRESETS = {
     button: {
-      small: { font: 13, padding: 6 },
-      medium: { font: 16, padding: 10 },
-      large: { font: 20, padding: 14 },
+      small: { font: 13, paddingX: 10, paddingY: 6 },
+      medium: { font: 16, paddingX: 14, paddingY: 10 },
+      large: { font: 20, paddingX: 20, paddingY: 14 },
     },
     card: {
-      small: { font: 14, padding: 8 },
-      medium: { font: 16, padding: 16 },
-      large: { font: 18, padding: 24 },
+      small: { font: 14, paddingX: 8, paddingY: 8 },
+      medium: { font: 16, paddingX: 16, paddingY: 16 },
+      large: { font: 18, paddingX: 24, paddingY: 24 },
     },
     header: {
-      small: { font: 16, padding: 8 },
-      medium: { font: 20, padding: 12 },
-      large: { font: 26, padding: 16 },
+      small: { font: 16, paddingX: 8, paddingY: 8 },
+      medium: { font: 20, paddingX: 12, paddingY: 12 },
+      large: { font: 26, paddingX: 16, paddingY: 16 },
     },
     badge: {
-      small: { font: 12, padding: 6 },
-      medium: { font: 14, padding: 8 },
-      large: { font: 16, padding: 10 },
+      small: { font: 12, paddingX: 6, paddingY: 6 },
+      medium: { font: 14, paddingX: 8, paddingY: 8 },
+      large: { font: 16, paddingX: 10, paddingY: 10 },
     },
     alert: {
-      small: { font: 14, padding: 10 },
-      medium: { font: 16, padding: 14 },
-      large: { font: 18, padding: 18 },
+      small: { font: 14, paddingX: 10, paddingY: 10 },
+      medium: { font: 16, paddingX: 14, paddingY: 14 },
+      large: { font: 18, paddingX: 18, paddingY: 18 },
     },
   };
 
@@ -157,7 +176,8 @@
     text: "",
     text2: "",
     fontSizeAdjust: 0,
-    paddingAdjust: 0,
+    paddingXAdjust: 0,
+    paddingYAdjust: 0,
 
     radius: 8,
     bgColor: "#4a78ff",
@@ -168,7 +188,8 @@
       bgColor: false,
       textColor: false,
       fontSize: false,
-      padding: false,
+      paddingX: false,
+      paddingY: false,
     },
 
     fontFamily: "system-ui",
@@ -181,9 +202,9 @@
       radius: 8,
 
       sizes: {
-        small: { font: 13, padding: 6 },
-        medium: { font: 16, padding: 10 },
-        large: { font: 20, padding: 14 },
+        small: { font: 13, paddingX: 6, paddingY: 6 },
+        medium: { font: 16, paddingX: 10, paddingY: 10 },
+        large: { font: 20, paddingX: 14, paddingY: 14 },
       },
     },
   };
@@ -349,13 +370,16 @@
     }
 
     const effectiveFontSize = preset.font + state.fontSizeAdjust;
-    const effectivePadding = preset.padding + state.paddingAdjust;
+    const effectivePaddingX = preset.paddingX + state.paddingXAdjust;
+    const effectivePaddingY = preset.paddingY + state.paddingYAdjust;
 
     propFontSize.value = effectiveFontSize;
-    propPadding.value = effectivePadding;
+    propPaddingX.value = effectivePaddingX;
+    propPaddingY.value = effectivePaddingY;
 
     fontSizeValue.textContent = px(effectiveFontSize);
-    paddingValue.textContent = px(effectivePadding);
+    paddingXValue.textContent = px(effectivePaddingX);
+    paddingYValue.textContent = px(effectivePaddingY);
 
     const effectiveRadius = state.overrides.radius
       ? state.radius
@@ -385,18 +409,28 @@
 
     tokenSizeSmallFont.value = state.tokens.sizes.small.font;
     tokenSizeSmallFontValue.textContent = px(state.tokens.sizes.small.font);
-    tokenSizeSmallPad.value = state.tokens.sizes.small.padding;
-    tokenSizeSmallPadValue.textContent = px(state.tokens.sizes.small.padding);
+    tokenSizeSmallPadX.value = state.tokens.sizes.small.paddingX;
+    tokenSizeSmallPadXValue.textContent = px(state.tokens.sizes.small.paddingX);
+    tokenSizeSmallPadY.value = state.tokens.sizes.small.paddingY;
+    tokenSizeSmallPadYValue.textContent = px(state.tokens.sizes.small.paddingY);
 
     tokenSizeMediumFont.value = state.tokens.sizes.medium.font;
     tokenSizeMediumFontValue.textContent = px(state.tokens.sizes.medium.font);
-    tokenSizeMediumPad.value = state.tokens.sizes.medium.padding;
-    tokenSizeMediumPadValue.textContent = px(state.tokens.sizes.medium.padding);
+    tokenSizeMediumPadX.value = state.tokens.sizes.medium.paddingX;
+    tokenSizeMediumPadXValue.textContent = px(
+      state.tokens.sizes.medium.paddingX
+    );
+    tokenSizeMediumPadY.value = state.tokens.sizes.medium.paddingY;
+    tokenSizeMediumPadYValue.textContent = px(
+      state.tokens.sizes.medium.paddingY
+    );
 
     tokenSizeLargeFont.value = state.tokens.sizes.large.font;
     tokenSizeLargeFontValue.textContent = px(state.tokens.sizes.large.font);
-    tokenSizeLargePad.value = state.tokens.sizes.large.padding;
-    tokenSizeLargePadValue.textContent = px(state.tokens.sizes.large.padding);
+    tokenSizeLargePadX.value = state.tokens.sizes.large.paddingX;
+    tokenSizeLargePadXValue.textContent = px(state.tokens.sizes.large.paddingX);
+    tokenSizeLargePadY.value = state.tokens.sizes.large.paddingY;
+    tokenSizeLargePadYValue.textContent = px(state.tokens.sizes.large.paddingY);
 
     applyTokensToPreview();
 
@@ -416,11 +450,12 @@
     }
 
     el.style.setProperty("--font-size-base", px(preset.font));
-    el.style.setProperty("--padding-y-base", px(preset.padding));
-    el.style.setProperty("--padding-x-base", px(preset.padding));
+    el.style.setProperty("--padding-x-base", px(preset.paddingX));
+    el.style.setProperty("--padding-y-base", px(preset.paddingY));
 
     el.style.setProperty("--font-size-adjust", px(state.fontSizeAdjust));
-    el.style.setProperty("--padding-adjust", px(state.paddingAdjust));
+    el.style.setProperty("--padding-adjust-x", px(state.paddingXAdjust));
+    el.style.setProperty("--padding-adjust-y", px(state.paddingYAdjust));
     el.style.fontFamily = state.fontFamily;
 
     el.classList.remove(
@@ -459,15 +494,19 @@
 
   function exportCSS() {
     const t = state.tokens;
+    const preset = PRESETS[state.component][state.size];
+
+    const computedFontSize = preset.font + state.fontSizeAdjust;
+    const computedPaddingX = preset.paddingX + state.paddingXAdjust;
+    const computedPaddingY = preset.paddingY + state.paddingYAdjust;
+
     const overrides = {
       "--component-font-family": state.fontFamily,
-      "--component-font-size":
-        PRESETS[state.component][state.size].font + state.fontSizeAdjust + "px",
-      "--component-padding":
-        PRESETS[state.component][state.size].padding +
-        state.paddingAdjust +
-        "px",
+      "--component-font-size": computedFontSize + "px",
+      "--component-padding-x": computedPaddingX + "px",
+      "--component-padding-y": computedPaddingY + "px",
     };
+
     if (state.overrides.radius)
       overrides["--component-border-radius"] = state.radius + "px";
     if (state.overrides.bgColor)
@@ -481,11 +520,14 @@
     css += `  --token-text: ${t.text};\n`;
     css += `  --token-border-radius: ${t.radius}px;\n`;
     css += `  --token-font-small: ${t.sizes.small.font}px;\n`;
-    css += `  --token-padding-small: ${t.sizes.small.padding}px;\n`;
+    css += `  --token-padding-x-small: ${t.sizes.small.paddingX}px;\n`;
+    css += `  --token-padding-y-small: ${t.sizes.small.paddingY}px;\n`;
     css += `  --token-font-medium: ${t.sizes.medium.font}px;\n`;
-    css += `  --token-padding-medium: ${t.sizes.medium.padding}px;\n`;
+    css += `  --token-padding-x-medium: ${t.sizes.medium.paddingX}px;\n`;
+    css += `  --token-padding-y-medium: ${t.sizes.medium.paddingY}px;\n`;
     css += `  --token-font-large: ${t.sizes.large.font}px;\n`;
-    css += `  --token-padding-large: ${t.sizes.large.padding}px;\n`;
+    css += `  --token-padding-x-large: ${t.sizes.large.paddingX}px;\n`;
+    css += `  --token-padding-y-large: ${t.sizes.large.paddingY}px;\n`;
 
     for (const key in overrides) {
       css += `  ${key}: ${overrides[key]};\n`;
@@ -501,8 +543,6 @@
 
   function exportJSON() {
     const preset = PRESETS[state.component][state.size];
-    const computedFontSize = preset.font + state.fontSizeAdjust;
-    const computedPadding = preset.padding + state.paddingAdjust;
 
     const exportData = {
       component: state.component,
@@ -512,8 +552,9 @@
       text2: state.text2,
       fontFamily: state.fontFamily,
       animation: state.animation !== "none" ? state.animation : null,
-      fontSize: computedFontSize + "px",
-      padding: computedPadding + "px",
+      fontSize: preset.font + state.fontSizeAdjust + "px",
+      paddingX: preset.paddingX + state.paddingXAdjust,
+      paddingY: preset.paddingY + state.paddingYAdjust,
       radius: state.radius,
       bgColor: state.bgColor,
       textColor: state.textColor,
@@ -591,11 +632,21 @@
       renderFromState();
     });
 
-    propPadding.addEventListener("input", () => {
-      const base = getPreset(state.component, state.size).padding;
+    propPaddingX.addEventListener("input", () => {
+      const base = getPreset(state.component, state.size).paddingX;
 
-      state.paddingAdjust = propPadding.valueAsNumber - base;
-      state.overrides.padding = true;
+      state.paddingXAdjust = propPaddingX.valueAsNumber - base;
+      state.overrides.paddingX = true;
+
+      recordState();
+      renderFromState();
+    });
+
+    propPaddingY.addEventListener("input", () => {
+      const base = getPreset(state.component, state.size).paddingY;
+
+      state.paddingYAdjust = propPaddingY.valueAsNumber - base;
+      state.overrides.paddingY = true;
 
       recordState();
       renderFromState();
@@ -605,14 +656,18 @@
       state.size = compSize.value;
 
       state.overrides.fontSize = false;
-      state.overrides.padding = false;
+      state.overrides.paddingX = false;
+      state.overrides.paddingY = false;
+
       state.fontSizeAdjust = 0;
-      state.paddingAdjust = 0;
+      state.paddingXAdjust = 0;
+      state.paddingYAdjust = 0;
 
       const preset = getPreset(state.component, state.size);
 
       propFontSize.value = preset.font;
-      propPadding.value = preset.padding;
+      propPaddingX.value = preset.paddingX;
+      propPaddingY.value = preset.paddingY;
 
       recordState();
       renderFromState();
@@ -667,28 +722,64 @@
       if (!state.overrides.fontSize) renderFromState();
     });
 
-    tokenSizeSmallPad.addEventListener("input", () => {
-      const v = tokenSizeSmallPad.valueAsNumber;
-      state.tokens.sizes.small.padding = v;
-      tokenSizeSmallPadValue.textContent = px(v);
+    tokenSizeSmallPadX.addEventListener("input", () => {
+      const v = tokenSizeSmallPadX.valueAsNumber;
+
+      state.tokens.sizes.small.paddingX = v;
+      tokenSizeSmallPadXValue.textContent = px(v);
+
       recordState();
-      if (!state.overrides.padding) renderFromState();
+      if (!state.overrides.paddingX) renderFromState();
     });
 
-    tokenSizeMediumPad.addEventListener("input", () => {
-      const v = tokenSizeMediumPad.valueAsNumber;
-      state.tokens.sizes.medium.padding = v;
-      tokenSizeMediumPadValue.textContent = px(v);
+    tokenSizeSmallPadY.addEventListener("input", () => {
+      const v = tokenSizeSmallPadY.valueAsNumber;
+
+      state.tokens.sizes.small.paddingY = v;
+      tokenSizeSmallPadYValue.textContent = px(v);
+
       recordState();
-      if (!state.overrides.padding) renderFromState();
+      if (!state.overrides.paddingY) renderFromState();
     });
 
-    tokenSizeLargePad.addEventListener("input", () => {
-      const v = tokenSizeLargePad.valueAsNumber;
-      state.tokens.sizes.large.padding = v;
-      tokenSizeLargePadValue.textContent = px(v);
+    tokenSizeMediumPadX.addEventListener("input", () => {
+      const v = tokenSizeMediumPadX.valueAsNumber;
+
+      state.tokens.sizes.medium.paddingX = v;
+      tokenSizeMediumPadXValue.textContent = px(v);
+
       recordState();
-      if (!state.overrides.padding) renderFromState();
+      if (!state.overrides.paddingX) renderFromState();
+    });
+
+    tokenSizeMediumPadY.addEventListener("input", () => {
+      const v = tokenSizeMediumPadY.valueAsNumber;
+
+      state.tokens.sizes.medium.paddingY = v;
+      tokenSizeMediumPadYValue.textContent = px(v);
+
+      recordState();
+      if (!state.overrides.paddingY) renderFromState();
+    });
+
+    tokenSizeLargePadX.addEventListener("input", () => {
+      const v = tokenSizeLargePadX.valueAsNumber;
+
+      state.tokens.sizes.large.paddingX = v;
+      tokenSizeLargePadXValue.textContent = px(v);
+
+      recordState();
+      if (!state.overrides.paddingX) renderFromState();
+    });
+
+    tokenSizeLargePadY.addEventListener("input", () => {
+      const v = tokenSizeLargePadY.valueAsNumber;
+
+      state.tokens.sizes.large.paddingY = v;
+      tokenSizeLargePadYValue.textContent = px(v);
+
+      recordState();
+      if (!state.overrides.paddingY) renderFromState();
     });
 
     exportCSSBtn.addEventListener("click", exportCSS);
@@ -702,7 +793,8 @@
       const size = state.size;
 
       state.fontSizeAdjust = 0;
-      state.paddingAdjust = 0;
+      state.paddingXAdjust = 0;
+      state.paddingYAdjust = 0;
       state.radius = state.tokens.radius;
       state.bgColor = state.tokens.primary;
       state.textColor = state.tokens.text;
@@ -712,7 +804,8 @@
         bgColor: false,
         textColor: false,
         fontSize: false,
-        padding: false,
+        paddingX: false,
+        paddingY: false,
       };
 
       state.component = comp;
@@ -738,7 +831,8 @@
         text: "",
         text2: "",
         fontSizeAdjust: 0,
-        paddingAdjust: 0,
+        paddingXAdjust: 0,
+        paddingYAdjust: 0,
 
         radius: 8,
         bgColor: "#4a78ff",
@@ -749,7 +843,8 @@
           bgColor: false,
           textColor: false,
           fontSize: false,
-          padding: false,
+          paddingX: false,
+          paddingY: false,
         },
 
         fontFamily: "system-ui",
@@ -761,9 +856,9 @@
           text: "#ffffff",
           radius: 8,
           sizes: {
-            small: { font: 13, padding: 6 },
-            medium: { font: 16, padding: 10 },
-            large: { font: 20, padding: 14 },
+            small: { font: 13, paddingX: 6, paddingY: 6 },
+            medium: { font: 16, paddingX: 10, paddingY: 10 },
+            large: { font: 20, paddingX: 14, paddingY: 14 },
           },
         },
       };

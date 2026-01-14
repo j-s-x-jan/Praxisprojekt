@@ -190,8 +190,8 @@ input[type="range"] {
   color: var(--component-text, var(--token-text));
   border-radius: var(--component-border-radius, var(--token-border-radius));
   font-size: calc(var(--font-size-base) + var(--font-size-adjust, 0px));
-  padding: calc(var(--padding-y-base) + var(--padding-adjust, 0px))
-    calc(var(--padding-x-base) + var(--padding-adjust, 0px));
+  padding: calc(var(--padding-y-base) + var(--padding-adjust-y, 0px))
+    calc(var(--padding-x-base) + var(--padding-adjust-x, 0px));
 }
 
 .preview-button {
@@ -325,8 +325,8 @@ input[type="range"] {
   line-height: 1;
   white-space: nowrap;
   border-radius: var(--component-border-radius, var(--token-border-radius));
-  padding: calc(var(--padding-y-base) + var(--padding-adjust, 0px))
-    calc(var(--padding-x-base) + var(--padding-adjust, 0px));
+  padding: calc(var(--padding-y-base) + var(--padding-adjust-y, 0px))
+    calc(var(--padding-x-base) + var(--padding-adjust-x, 0px));
   font-size: calc(var(--font-size-base) + var(--font-size-adjust, 0px));
 }
 
@@ -368,8 +368,8 @@ input[type="range"] {
   width: 100%;
   display: block;
   border-radius: var(--component-border-radius, var(--token-border-radius));
-  padding: calc(var(--padding-y-base) + var(--padding-adjust, 0px))
-    calc(var(--padding-x-base) + var(--padding-adjust, 0px));
+  padding: calc(var(--padding-y-base) + var(--padding-adjust-y, 0px))
+    calc(var(--padding-x-base) + var(--padding-adjust-x, 0px));
   font-size: calc(var(--font-size-base) + var(--font-size-adjust, 0px));
   box-sizing: border-box;
   border-left-width: 4px;
