@@ -49,9 +49,19 @@
           <summary>Properties</summary>
 
           <div class="prop-group">
-            <label for="prop-text">Label Text</label>
+            <label for="prop-text">Text</label>
             <input
               id="prop-text"
+              type="text"
+              placeholder="Enter text..."
+              value="Enter text..."
+            />
+          </div>
+
+          <div class="prop-group" id="prop-text-2-group" aria-hidden="true">
+            <label for="prop-text-2">Secondary Text</label>
+            <input
+              id="prop-text-2"
               type="text"
               placeholder="Enter text..."
               value="Enter text..."
@@ -257,7 +267,7 @@
         <button id="export-json">Export JSON</button>
         <button id="undo-btn">Undo</button>
         <button id="redo-btn">Redo</button>
-        <button id="reset-btn">Reset Properties</button>
+        <button id="reset-btn">Reset to Design Tokens</button>
         <button id="clearAllBtn">Reset All Settings</button>
         <div id="contrast-warning"></div>
       </aside>

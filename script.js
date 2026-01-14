@@ -6,6 +6,8 @@
   const compSize = document.getElementById("component-size");
 
   const propText = document.getElementById("prop-text");
+  const propText2Group = document.getElementById("prop-text-2-group");
+  const propText2 = document.getElementById("prop-text-2");
   const propFontSize = document.getElementById("prop-font-size");
   const propPadding = document.getElementById("prop-padding");
   const propRadius = document.getElementById("prop-radius");
@@ -153,6 +155,7 @@
     variant: "primary",
     size: "medium",
     text: "",
+    text2: "",
     fontSizeAdjust: 0,
     paddingAdjust: 0,
 
@@ -224,15 +227,26 @@
     return btn;
   }
 
-  function createCard({ text, variant, size }) {
-    const card = document.createElement("div");
-    card.className = `preview-card preview-component ${variant} size-${size}`;
+  function createCard({ variant, size } = {}) {
+    const titleText =
+      state.text && state.text.trim().length > 0 ? state.text : "Title";
+
+    const contentText =
+      state.text2 && state.text2.trim().length > 0
+        ? state.text2
+        : "Example content";
+
+    const cardEl = document.createElement("div");
+    cardEl.className = `preview-card preview-component ${variant} size-${size}`;
+
     const h = document.createElement("h3");
-    h.textContent = text || "Title";
+    h.textContent = titleText;
+
     const p = document.createElement("p");
-    p.textContent = "Example content";
-    card.append(h, p);
-    return card;
+    p.textContent = contentText;
+
+    cardEl.append(h, p);
+    return cardEl;
   }
 
   function createHeader({ text, variant, size }) {
@@ -297,7 +311,7 @@
       : state.tokens.text;
     const ratio = getContrastRatio(bg, text);
 
-    if (ratio < 2) {
+    if (ratio < 2.5) {
       warningEl.textContent = `⚠️ Low contrast between text and background. Text may be hard to read.`;
     } else {
       warningEl.textContent = "";
@@ -312,6 +326,27 @@
     const preset = getPreset(state.component, state.size);
 
     propText.value = state.text;
+    const primaryLabel = document.querySelector('label[for="prop-text"]');
+    if (primaryLabel) primaryLabel.textContent = "Text";
+
+    if (state.component === "card") {
+      if (propText2Group) {
+        propText2Group.classList.remove("hidden");
+        propText2Group.setAttribute("aria-hidden", "false");
+      }
+      if (propText2) {
+        propText2.disabled = false;
+        propText2.value = state.text2;
+      }
+    } else {
+      if (propText2Group) {
+        propText2Group.classList.add("hidden");
+        propText2Group.setAttribute("aria-hidden", "true");
+      }
+      if (propText2) {
+        propText2.disabled = true;
+      }
+    }
 
     const effectiveFontSize = preset.font + state.fontSizeAdjust;
     const effectivePadding = preset.padding + state.paddingAdjust;
@@ -474,6 +509,7 @@
       variant: state.variant,
       size: state.size,
       text: state.text,
+      text2: state.text2,
       fontFamily: state.fontFamily,
       animation: state.animation !== "none" ? state.animation : null,
       fontSize: computedFontSize + "px",
@@ -501,6 +537,12 @@
 
     propText.addEventListener("input", () => {
       state.text = propText.value;
+      recordState();
+      renderFromState();
+    });
+
+    propText2.addEventListener("input", () => {
+      state.text2 = propText2.value;
       recordState();
       renderFromState();
     });
@@ -658,16 +700,24 @@
       const comp = state.component;
       const variant = state.variant;
       const size = state.size;
-      const tokens = deepCopy(state.tokens);
 
-      state = deepCopy(history[0]);
+      state.fontSizeAdjust = 0;
+      state.paddingAdjust = 0;
+      state.radius = state.tokens.radius;
+      state.bgColor = state.tokens.primary;
+      state.textColor = state.tokens.text;
+
+      state.overrides = {
+        radius: false,
+        bgColor: false,
+        textColor: false,
+        fontSize: false,
+        padding: false,
+      };
+
       state.component = comp;
       state.variant = variant;
       state.size = size;
-      state.tokens = tokens;
-
-      state.overrides.fontSize = false;
-      state.overrides.padding = false;
 
       renderFromState();
       recordState();
@@ -686,6 +736,7 @@
         variant: "primary",
         size: "medium",
         text: "",
+        text2: "",
         fontSizeAdjust: 0,
         paddingAdjust: 0,
 

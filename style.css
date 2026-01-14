@@ -463,6 +463,10 @@ a:focus {
   margin-top: 10px;
 }
 
+.hidden {
+  display: none !important;
+}
+
 @media (max-width: 800px) {
   #layout {
     grid-template-columns: 1fr;
