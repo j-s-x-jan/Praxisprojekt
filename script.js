@@ -494,55 +494,64 @@
 
   function exportCSS() {
     const t = state.tokens;
-    const preset = PRESETS[state.component][state.size];
+    const preset = getPreset(state.component, state.size);
 
-    const computedFontSize = preset.font + state.fontSizeAdjust;
-    const computedPaddingX = preset.paddingX + state.paddingXAdjust;
-    const computedPaddingY = preset.paddingY + state.paddingYAdjust;
-
-    const overrides = {
-      "--component-font-family": state.fontFamily,
-      "--component-font-size": computedFontSize + "px",
-      "--component-padding-x": computedPaddingX + "px",
-      "--component-padding-y": computedPaddingY + "px",
-    };
-
-    if (state.overrides.radius)
-      overrides["--component-border-radius"] = state.radius + "px";
-    if (state.overrides.bgColor)
-      overrides["--component-background-color"] = state.bgColor;
-    if (state.overrides.textColor)
-      overrides["--component-text-color"] = state.textColor;
+    const computedFontSize = (preset.font || 0) + (state.fontSizeAdjust || 0);
+    const computedPaddingX =
+      (preset.paddingX || 0) + (state.paddingXAdjust || 0);
+    const computedPaddingY =
+      (preset.paddingY || 0) + (state.paddingYAdjust || 0);
 
     let css = ":root {\n";
     css += `  --token-primary: ${t.primary};\n`;
     css += `  --token-secondary: ${t.secondary};\n`;
     css += `  --token-text: ${t.text};\n`;
     css += `  --token-border-radius: ${t.radius}px;\n`;
+
     css += `  --token-font-small: ${t.sizes.small.font}px;\n`;
     css += `  --token-padding-x-small: ${t.sizes.small.paddingX}px;\n`;
     css += `  --token-padding-y-small: ${t.sizes.small.paddingY}px;\n`;
+
     css += `  --token-font-medium: ${t.sizes.medium.font}px;\n`;
     css += `  --token-padding-x-medium: ${t.sizes.medium.paddingX}px;\n`;
     css += `  --token-padding-y-medium: ${t.sizes.medium.paddingY}px;\n`;
+
     css += `  --token-font-large: ${t.sizes.large.font}px;\n`;
     css += `  --token-padding-x-large: ${t.sizes.large.paddingX}px;\n`;
-    css += `  --token-padding-y-large: ${t.sizes.large.paddingY}px;\n`;
+    css += `  --token-padding-y-large: ${t.sizes.large.paddingY}px;\n\n`;
 
-    for (const key in overrides) {
-      css += `  ${key}: ${overrides[key]};\n`;
+    css += `  --component-font-family: ${state.fontFamily};\n`;
+    css += `  --component-font-size: ${computedFontSize}px;\n`;
+    css += `  --component-padding-x: ${computedPaddingX}px;\n`;
+    css += `  --component-padding-y: ${computedPaddingY}px;\n`;
+
+    if (state.overrides.radius) {
+      css += `  --component-border-radius: ${state.radius}px;\n`;
     }
-    css += "}";
+    if (state.overrides.bgColor) {
+      css += `  --component-background-color: ${state.bgColor};\n`;
+    }
+    if (state.overrides.textColor) {
+      css += `  --component-text-color: ${state.textColor};\n`;
+    }
+
+    css += "}\n";
 
     if (state.animation !== "none") {
-      css += `\n\n/* Requires animation preset: .anim-${state.animation} */`;
+      css += `\n/* Requires animation preset: .anim-${state.animation} */\n`;
     }
 
     navigator.clipboard.writeText(css).then(() => alert("CSS copied!"));
   }
 
   function exportJSON() {
-    const preset = PRESETS[state.component][state.size];
+    const preset = getPreset(state.component, state.size);
+
+    const computedFontSize = (preset.font || 0) + (state.fontSizeAdjust || 0);
+    const computedPaddingX =
+      (preset.paddingX || 0) + (state.paddingXAdjust || 0);
+    const computedPaddingY =
+      (preset.paddingY || 0) + (state.paddingYAdjust || 0);
 
     const exportData = {
       component: state.component,
@@ -552,9 +561,19 @@
       text2: state.text2,
       fontFamily: state.fontFamily,
       animation: state.animation !== "none" ? state.animation : null,
-      fontSize: preset.font + state.fontSizeAdjust + "px",
-      paddingX: preset.paddingX + state.paddingXAdjust,
-      paddingY: preset.paddingY + state.paddingYAdjust,
+      fontSize: computedFontSize + "px",
+      padding: {
+        x: {
+          base: preset.paddingX,
+          adjust: state.paddingXAdjust || 0,
+          value: computedPaddingX,
+        },
+        y: {
+          base: preset.paddingY,
+          adjust: state.paddingYAdjust || 0,
+          value: computedPaddingY,
+        },
+      },
       radius: state.radius,
       bgColor: state.bgColor,
       textColor: state.textColor,
