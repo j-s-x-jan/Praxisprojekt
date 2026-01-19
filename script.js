@@ -30,45 +30,45 @@
   const tokenRadiusValue = document.getElementById("token-border-radius-value");
   const tokenSizeSmallFont = document.getElementById("token-size-small-font");
   const tokenSizeSmallFontValue = document.getElementById(
-    "token-size-small-font-value"
+    "token-size-small-font-value",
   );
   const tokenSizeSmallPadX = document.getElementById("token-size-small-pad-x");
   const tokenSizeSmallPadXValue = document.getElementById(
-    "token-size-small-pad-x-value"
+    "token-size-small-pad-x-value",
   );
   const tokenSizeSmallPadY = document.getElementById("token-size-small-pad-y");
   const tokenSizeSmallPadYValue = document.getElementById(
-    "token-size-small-pad-y-value"
+    "token-size-small-pad-y-value",
   );
 
   const tokenSizeMediumFont = document.getElementById("token-size-medium-font");
   const tokenSizeMediumFontValue = document.getElementById(
-    "token-size-medium-font-value"
+    "token-size-medium-font-value",
   );
   const tokenSizeMediumPadX = document.getElementById(
-    "token-size-medium-pad-x"
+    "token-size-medium-pad-x",
   );
   const tokenSizeMediumPadXValue = document.getElementById(
-    "token-size-medium-pad-x-value"
+    "token-size-medium-pad-x-value",
   );
   const tokenSizeMediumPadY = document.getElementById(
-    "token-size-medium-pad-y"
+    "token-size-medium-pad-y",
   );
   const tokenSizeMediumPadYValue = document.getElementById(
-    "token-size-medium-pad-y-value"
+    "token-size-medium-pad-y-value",
   );
 
   const tokenSizeLargeFont = document.getElementById("token-size-large-font");
   const tokenSizeLargeFontValue = document.getElementById(
-    "token-size-large-font-value"
+    "token-size-large-font-value",
   );
   const tokenSizeLargePadX = document.getElementById("token-size-large-pad-x");
   const tokenSizeLargePadXValue = document.getElementById(
-    "token-size-large-pad-x-value"
+    "token-size-large-pad-x-value",
   );
   const tokenSizeLargePadY = document.getElementById("token-size-large-pad-y");
   const tokenSizeLargePadYValue = document.getElementById(
-    "token-size-large-pad-y-value"
+    "token-size-large-pad-y-value",
   );
 
   const exportCSSBtn = document.getElementById("export-css");
@@ -145,6 +145,16 @@
       small: { font: 14, paddingX: 10, paddingY: 10 },
       medium: { font: 16, paddingX: 14, paddingY: 14 },
       large: { font: 18, paddingX: 18, paddingY: 18 },
+    },
+    input: {
+      small: { font: 13, paddingX: 8, paddingY: 6 },
+      medium: { font: 14, paddingX: 10, paddingY: 8 },
+      large: { font: 16, paddingX: 12, paddingY: 10 },
+    },
+    modal: {
+      small: { font: 14, paddingX: 10, paddingY: 10 },
+      medium: { font: 16, paddingX: 12, paddingY: 12 },
+      large: { font: 18, paddingX: 16, paddingY: 16 },
     },
   };
 
@@ -291,6 +301,80 @@
     return alert;
   }
 
+  function createInput({ variant, size } = {}) {
+    const value = state.text ?? "";
+    const container = document.createElement("div");
+    container.className = `preview-input preview-component ${variant} size-${size}`;
+
+    const wrap = document.createElement("div");
+    wrap.className = "input-wrap";
+
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Type...";
+    input.value = value;
+    input.autocomplete = "off";
+
+    input.addEventListener("input", (e) => {
+      state.text = e.target.value;
+      if (propText) propText.value = state.text;
+    });
+
+    wrap.appendChild(input);
+    container.appendChild(wrap);
+    return container;
+  }
+
+  function createModal({ variant, size } = {}) {
+    const titleText =
+      state.text && state.text.trim().length > 0 ? state.text : "Title";
+    const bodyText =
+      state.text2 && state.text2.trim().length > 0
+        ? state.text2
+        : "Modal content";
+
+    const modal = document.createElement("div");
+    modal.className = `preview-modal preview-component ${variant} size-${size}`;
+
+    const h = document.createElement("h3");
+    h.textContent = titleText;
+
+    const bodyWrap = document.createElement("div");
+    bodyWrap.className = "modal-body";
+
+    const textarea = document.createElement("textarea");
+    textarea.value = bodyText;
+    textarea.placeholder = "Enter details...";
+
+    textarea.addEventListener("input", (e) => {
+      state.text2 = e.target.value;
+      if (propText2) propText2.value = state.text2;
+    });
+
+    bodyWrap.appendChild(textarea);
+
+    const actions = document.createElement("div");
+    actions.style.display = "flex";
+    actions.style.gap = "8px";
+    actions.style.justifyContent = "flex-end";
+    actions.style.marginTop = "8px";
+
+    const cancel = document.createElement("button");
+    cancel.textContent = "Cancel";
+    cancel.className = `preview-button ${variant} size-${size}`;
+    cancel.addEventListener("click", () => {});
+
+    const ok = document.createElement("button");
+    ok.textContent = "OK";
+    ok.className = `preview-button ${variant} size-${size}`;
+    ok.addEventListener("click", () => {});
+
+    actions.append(cancel, ok);
+
+    modal.append(h, bodyWrap, actions);
+    return modal;
+  }
+
   function hexToRgb(hex) {
     const h = hex.replace("#", "");
     if (h.length === 3) {
@@ -311,7 +395,7 @@
     const srgb = rgb
       .map((v) => v / 255)
       .map((v) =>
-        v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4)
+        v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4),
       );
     return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
   }
@@ -350,7 +434,7 @@
     const primaryLabel = document.querySelector('label[for="prop-text"]');
     if (primaryLabel) primaryLabel.textContent = "Text";
 
-    if (state.component === "card") {
+    if (state.component === "card" || state.component === "modal") {
       if (propText2Group) {
         propText2Group.classList.remove("hidden");
         propText2Group.setAttribute("aria-hidden", "false");
@@ -418,11 +502,11 @@
     tokenSizeMediumFontValue.textContent = px(state.tokens.sizes.medium.font);
     tokenSizeMediumPadX.value = state.tokens.sizes.medium.paddingX;
     tokenSizeMediumPadXValue.textContent = px(
-      state.tokens.sizes.medium.paddingX
+      state.tokens.sizes.medium.paddingX,
     );
     tokenSizeMediumPadY.value = state.tokens.sizes.medium.paddingY;
     tokenSizeMediumPadYValue.textContent = px(
-      state.tokens.sizes.medium.paddingY
+      state.tokens.sizes.medium.paddingY,
     );
 
     tokenSizeLargeFont.value = state.tokens.sizes.large.font;
@@ -447,6 +531,10 @@
       el = createBadge(state);
     } else if (state.component === "alert") {
       el = createAlert(state);
+    } else if (state.component === "input") {
+      el = createInput(state);
+    } else if (state.component === "modal") {
+      el = createModal(state);
     }
 
     el.style.setProperty("--font-size-base", px(preset.font));
@@ -462,7 +550,7 @@
       "anim-hover-scale",
       "anim-hover-fade",
       "anim-hover-lift",
-      "anim-press-scale"
+      "anim-press-scale",
     );
 
     if (state.animation !== "none") {
@@ -592,7 +680,7 @@
         state.variant = compVariant.value;
         recordState();
         renderFromState();
-      })
+      }),
     );
 
     propText.addEventListener("input", () => {
@@ -837,7 +925,7 @@
 
     clearAllBtn.addEventListener("click", () => {
       const confirmed = confirm(
-        "Resetting all settings will restore the default configuration and permanently remove all user customizations. Do you wish to continue?"
+        "Resetting all settings will restore the default configuration and permanently remove all user customizations. Do you wish to continue?",
       );
       if (!confirmed) return;
 
