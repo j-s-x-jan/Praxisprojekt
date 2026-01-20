@@ -179,7 +179,7 @@
     root.style.setProperty("--token-on-secondary", t.text);
   }
 
-  let state = {
+  let state = { 
     component: "button",
     variant: "primary",
     size: "medium",
@@ -219,7 +219,7 @@
     },
   };
 
-  let history = [];
+  let history = []; //für undo/redo
   let historyIndex = -1;
 
   function recordState() {
