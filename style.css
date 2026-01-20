@@ -426,6 +426,7 @@ input[type="range"] {
   width: 100%;
   max-width: 520px;
   display: block;
+  color: var(--component-text, var(--token-text));
 }
 
 .preview-input .input-wrap {
@@ -442,27 +443,25 @@ input[type="range"] {
     calc(var(--padding-x-base) + var(--padding-adjust-x, 0px));
   font-size: calc(var(--font-size-base) + var(--font-size-adjust, 0px));
   box-sizing: border-box;
-  color: var(--component-text, var(--token-text));
+  color: inherit;
   background: var(--component-bg, #ffffff);
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   outline: none;
 }
 
 .preview-input input::placeholder {
-  color: var(--component-text, var(--token-text));
+  color: inherit;
   opacity: 1;
 }
 
 .preview-input.primary input {
   background: var(--component-bg, var(--token-primary));
-  color: var(--component-text, var(--token-text));
-  border: 1px solid rgba(0,0,0,0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .preview-input.secondary input {
   background: var(--component-bg, var(--token-secondary));
-  color: var(--component-text, var(--token-text));
-  border: 1px solid rgba(0,0,0,0.04);
+  border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
 .preview-input.outlined input {
@@ -477,10 +476,14 @@ input[type="range"] {
   border-radius: var(--component-border-radius, var(--token-border-radius));
   padding: calc(var(--padding-y-base) + var(--padding-adjust-y, 0px))
     calc(var(--padding-x-base) + var(--padding-adjust-x, 0px));
-  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
   background: var(--component-bg, #fff);
   color: var(--component-text, var(--token-text));
   box-sizing: border-box;
+}
+
+.preview-modal button {
+  font-size: inherit;
 }
 
 .preview-modal h3 {
@@ -502,7 +505,7 @@ input[type="range"] {
   resize: vertical;
   padding: 8px;
   border-radius: 6px;
-  border: 1px solid rgba(0,0,0,0.08);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   background: transparent;
   color: inherit;
   box-sizing: border-box;
@@ -721,6 +724,38 @@ a:focus {
     --padding-x-base: 14px;
   }
 
+  .preview-input.size-small {
+    --font-size-base: 12px;
+    --padding-y-base: 6px;
+    --padding-x-base: 8px;
+  }
+  .preview-input.size-medium {
+    --font-size-base: 14px;
+    --padding-y-base: 8px;
+    --padding-x-base: 10px;
+  }
+  .preview-input.size-large {
+    --font-size-base: 16px;
+    --padding-y-base: 10px;
+    --padding-x-base: 12px;
+  }
+
+  .preview-modal.size-small {
+    --font-size-base: 13px;
+    --padding-y-base: 8px;
+    --padding-x-base: 10px;
+  }
+  .preview-modal.size-medium {
+    --font-size-base: 15px;
+    --padding-y-base: 10px;
+    --padding-x-base: 12px;
+  }
+  .preview-modal.size-large {
+    --font-size-base: 17px;
+    --padding-y-base: 12px;
+    --padding-x-base: 14px;
+  }
+
   .preview-nav {
     gap: 10px;
     flex-wrap: wrap;
@@ -841,6 +876,38 @@ a:focus {
     --padding-x-base: 10px;
   }
   .preview-alert.size-large {
+    --font-size-base: 15px;
+    --padding-y-base: 10px;
+    --padding-x-base: 12px;
+  }
+
+  .preview-input.size-small {
+    --font-size-base: 11px;
+    --padding-y-base: 5px;
+    --padding-x-base: 7px;
+  }
+  .preview-input.size-medium {
+    --font-size-base: 13px;
+    --padding-y-base: 6px;
+    --padding-x-base: 9px;
+  }
+  .preview-input.size-large {
+    --font-size-base: 15px;
+    --padding-y-base: 8px;
+    --padding-x-base: 10px;
+  }
+
+  .preview-modal.size-small {
+    --font-size-base: 12px;
+    --padding-y-base: 6px;
+    --padding-x-base: 8px;
+  }
+  .preview-modal.size-medium {
+    --font-size-base: 13px;
+    --padding-y-base: 8px;
+    --padding-x-base: 10px;
+  }
+  .preview-modal.size-large {
     --font-size-base: 15px;
     --padding-y-base: 10px;
     --padding-x-base: 12px;
