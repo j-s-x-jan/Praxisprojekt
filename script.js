@@ -80,7 +80,7 @@
 
   const px = (v) => v + "px";
   const deepCopy = (o) => JSON.parse(JSON.stringify(o));
-  const STORAGE_KEY = "ui-configurator-state-v1";
+  const STORAGE_KEY = "ui-configurator-state-v1"; //lokales speichern im Browser
 
   function mergeDeep(target, source) {
     for (const key in source) {
@@ -219,8 +219,8 @@
     },
   };
 
-  let history = []; //für undo/redo
-  let historyIndex = -1;
+  let history = []; //für undo und redo
+  let historyIndex = -1; // aktueller Zustand
 
   function recordState() {
     history = history.slice(0, historyIndex + 1);

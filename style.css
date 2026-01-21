@@ -42,8 +42,8 @@ body {
 
 #layout {
   display: grid;
-  grid-template-columns: 260px 1fr 260px;
-  height: calc(100vh - 80px);
+  grid-template-columns: 260px 1fr 260px; /*links und rechts je eine Spalte von 260px, in der Mitte flexible Breite*/
+  height: calc(100vh - 80px); /*volle Höhe minus Header-Höhe*/
   gap: 12px;
   padding: 12px;
 }
@@ -584,7 +584,7 @@ a:focus {
 
 @media (max-width: 800px) {
   #layout {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr; /* einspaltiges Layout */
     grid-auto-rows: min-content;
     height: auto;
     gap: 10px;
