@@ -434,7 +434,7 @@
     const primaryLabel = document.querySelector('label[for="prop-text"]');
     if (primaryLabel) primaryLabel.textContent = "Text";
 
-    if (state.component === "card" || state.component === "modal") {
+    if (state.component === "card" || state.component === "modal") { //für zweites Textfeld
       if (propText2Group) {
         propText2Group.classList.remove("hidden");
         propText2Group.setAttribute("aria-hidden", "false");
@@ -453,15 +453,15 @@
       }
     }
 
-    const effectiveFontSize = preset.font + state.fontSizeAdjust;
+    const effectiveFontSize = preset.font + state.fontSizeAdjust; //aktueller Wert aus Standardwert und Veränderung
     const effectivePaddingX = preset.paddingX + state.paddingXAdjust;
     const effectivePaddingY = preset.paddingY + state.paddingYAdjust;
 
-    propFontSize.value = effectiveFontSize;
+    propFontSize.value = effectiveFontSize; //Slider in der linken Konfigurations-Spalte setzen
     propPaddingX.value = effectivePaddingX;
     propPaddingY.value = effectivePaddingY;
 
-    fontSizeValue.textContent = px(effectiveFontSize);
+    fontSizeValue.textContent = px(effectiveFontSize); //px-Werte unter den Slidern anzeigen
     paddingXValue.textContent = px(effectivePaddingX);
     paddingYValue.textContent = px(effectivePaddingY);
 
@@ -546,7 +546,7 @@
     el.style.setProperty("--padding-adjust-y", px(state.paddingYAdjust));
     el.style.fontFamily = state.fontFamily;
 
-    el.classList.remove(
+    el.classList.remove( //nicht mehr ausgewählte Animationen entfernen
       "anim-hover-scale",
       "anim-hover-fade",
       "anim-hover-lift",
@@ -558,7 +558,7 @@
     }
 
     if (state.overrides.radius) {
-      el.style.setProperty("--component-border-radius", px(state.radius));
+      el.style.setProperty("--component-border-radius", px(state.radius)); 
     } else {
       el.style.removeProperty("--component-border-radius");
     }
@@ -831,7 +831,6 @@
 
     tokenSizeSmallPadX.addEventListener("input", () => {
       const v = tokenSizeSmallPadX.valueAsNumber;
-
       state.tokens.sizes.small.paddingX = v;
       tokenSizeSmallPadXValue.textContent = px(v);
 
@@ -841,7 +840,6 @@
 
     tokenSizeSmallPadY.addEventListener("input", () => {
       const v = tokenSizeSmallPadY.valueAsNumber;
-
       state.tokens.sizes.small.paddingY = v;
       tokenSizeSmallPadYValue.textContent = px(v);
 
@@ -851,7 +849,6 @@
 
     tokenSizeMediumPadX.addEventListener("input", () => {
       const v = tokenSizeMediumPadX.valueAsNumber;
-
       state.tokens.sizes.medium.paddingX = v;
       tokenSizeMediumPadXValue.textContent = px(v);
 
@@ -861,7 +858,6 @@
 
     tokenSizeMediumPadY.addEventListener("input", () => {
       const v = tokenSizeMediumPadY.valueAsNumber;
-
       state.tokens.sizes.medium.paddingY = v;
       tokenSizeMediumPadYValue.textContent = px(v);
 
@@ -871,7 +867,6 @@
 
     tokenSizeLargePadX.addEventListener("input", () => {
       const v = tokenSizeLargePadX.valueAsNumber;
-
       state.tokens.sizes.large.paddingX = v;
       tokenSizeLargePadXValue.textContent = px(v);
 
@@ -881,7 +876,6 @@
 
     tokenSizeLargePadY.addEventListener("input", () => {
       const v = tokenSizeLargePadY.valueAsNumber;
-
       state.tokens.sizes.large.paddingY = v;
       tokenSizeLargePadYValue.textContent = px(v);
 

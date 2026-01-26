@@ -201,13 +201,13 @@ input[type="range"] {
     calc(var(--padding-x-base) + var(--padding-adjust-x, 0px));
 }
 
-.preview-button {
+.preview-button {  /*Vorschau der konkreten Komponente*/
   border: none;
   cursor: pointer;
   box-shadow: 0 6px 18px rgba(34, 34, 34, 0.06);
 }
 
-.preview-button.primary {
+.preview-button.primary {  /*Farbvariante*/
   background: var(--component-bg, var(--token-primary));
   color: var(--component-text, var(--token-text));
 }
@@ -223,7 +223,7 @@ input[type="range"] {
   border: 1px solid var(--token-primary);
 }
 
-.preview-button.size-small {
+.preview-button.size-small {  /*Größenvariante*/
   --font-size-base: 13px;
   --padding-y-base: 6px;
   --padding-x-base: 10px;
