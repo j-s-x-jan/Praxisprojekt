@@ -925,7 +925,7 @@
 
       localStorage.removeItem(STORAGE_KEY);
 
-      state = {
+      state = { //aktueller Zustand des Konfigurators
         component: "button",
         variant: "primary",
         size: "medium",
