@@ -1,3 +1,7 @@
+import { state } from "./state.js";
+import { renderFromState } from "./render.js";
+import { getPreset } from "./presets.js";
+
 (function () {
   const previewArea = document.getElementById("preview-area");
 
@@ -120,49 +124,6 @@
     }
   }
 
-  const PRESETS = {
-    button: {
-      small: { font: 13, paddingX: 10, paddingY: 6 },
-      medium: { font: 16, paddingX: 14, paddingY: 10 },
-      large: { font: 20, paddingX: 20, paddingY: 14 },
-    },
-    card: {
-      small: { font: 14, paddingX: 8, paddingY: 8 },
-      medium: { font: 16, paddingX: 16, paddingY: 16 },
-      large: { font: 18, paddingX: 24, paddingY: 24 },
-    },
-    header: {
-      small: { font: 16, paddingX: 8, paddingY: 8 },
-      medium: { font: 20, paddingX: 12, paddingY: 12 },
-      large: { font: 26, paddingX: 16, paddingY: 16 },
-    },
-    badge: {
-      small: { font: 12, paddingX: 6, paddingY: 6 },
-      medium: { font: 14, paddingX: 8, paddingY: 8 },
-      large: { font: 16, paddingX: 10, paddingY: 10 },
-    },
-    alert: {
-      small: { font: 14, paddingX: 10, paddingY: 10 },
-      medium: { font: 16, paddingX: 14, paddingY: 14 },
-      large: { font: 18, paddingX: 18, paddingY: 18 },
-    },
-    input: {
-      small: { font: 13, paddingX: 8, paddingY: 6 },
-      medium: { font: 14, paddingX: 10, paddingY: 8 },
-      large: { font: 16, paddingX: 12, paddingY: 10 },
-    },
-    modal: {
-      small: { font: 14, paddingX: 10, paddingY: 10 },
-      medium: { font: 16, paddingX: 12, paddingY: 12 },
-      large: { font: 18, paddingX: 16, paddingY: 16 },
-    },
-  };
-
-  function getPreset(component, size) {
-    const tokenPreset = state.tokens.sizes[size];
-    return tokenPreset ?? PRESETS[component][size];
-  }
-
   function setRootVar(name, value) {
     document.documentElement.style.setProperty(name, value);
   }
@@ -179,46 +140,6 @@
     root.style.setProperty("--token-on-secondary", t.text);
   }
 
-  let state = { 
-    component: "button",
-    variant: "primary",
-    size: "medium",
-    text: "",
-    text2: "",
-    fontSizeAdjust: 0,
-    paddingXAdjust: 0,
-    paddingYAdjust: 0,
-
-    radius: 8,
-    bgColor: "#4a78ff",
-    textColor: "#ffffff",
-
-    overrides: {
-      radius: false,
-      bgColor: false,
-      textColor: false,
-      fontSize: false,
-      paddingX: false,
-      paddingY: false,
-    },
-
-    fontFamily: "system-ui",
-    animation: "none",
-
-    tokens: {
-      primary: "#4a78ff",
-      secondary: "#335bef",
-      text: "#ffffff",
-      radius: 8,
-
-      sizes: {
-        small: { font: 13, paddingX: 6, paddingY: 6 },
-        medium: { font: 16, paddingX: 10, paddingY: 10 },
-        large: { font: 20, paddingX: 14, paddingY: 14 },
-      },
-    },
-  };
-
   let history = []; //für undo und redo
   let historyIndex = -1; // aktueller Zustand
 
@@ -233,7 +154,7 @@
   function undo() {
     if (historyIndex <= 0) return;
     historyIndex--;
-    state = deepCopy(history[historyIndex]);
+    Object.assign(state, deepCopy(history[historyIndex]));
     renderFromState();
     updateUndoRedoButtons();
   }
@@ -241,7 +162,7 @@
   function redo() {
     if (historyIndex >= history.length - 1) return;
     historyIndex++;
-    state = deepCopy(history[historyIndex]);
+    Object.assign(state, deepCopy(history[historyIndex]));
     renderFromState();
     updateUndoRedoButtons();
   }
@@ -423,163 +344,6 @@
     }
   }
 
-  function renderFromState() {
-    compSelect.value = state.component;
-    compVariant.value = state.variant;
-    compSize.value = state.size;
-
-    const preset = getPreset(state.component, state.size);
-
-    propText.value = state.text;
-    const primaryLabel = document.querySelector('label[for="prop-text"]');
-    if (primaryLabel) primaryLabel.textContent = "Text";
-
-    if (state.component === "card" || state.component === "modal") { //für zweites Textfeld
-      if (propText2Group) {
-        propText2Group.classList.remove("hidden");
-        propText2Group.setAttribute("aria-hidden", "false");
-      }
-      if (propText2) {
-        propText2.disabled = false;
-        propText2.value = state.text2;
-      }
-    } else {
-      if (propText2Group) {
-        propText2Group.classList.add("hidden");
-        propText2Group.setAttribute("aria-hidden", "true");
-      }
-      if (propText2) {
-        propText2.disabled = true;
-      }
-    }
-
-    const effectiveFontSize = preset.font + state.fontSizeAdjust; //aktueller Wert aus Standardwert und Veränderung
-    const effectivePaddingX = preset.paddingX + state.paddingXAdjust;
-    const effectivePaddingY = preset.paddingY + state.paddingYAdjust;
-
-    propFontSize.value = effectiveFontSize; //Slider in der linken Konfigurations-Spalte setzen
-    propPaddingX.value = effectivePaddingX;
-    propPaddingY.value = effectivePaddingY;
-
-    fontSizeValue.textContent = px(effectiveFontSize); //px-Werte unter den Slidern anzeigen
-    paddingXValue.textContent = px(effectivePaddingX);
-    paddingYValue.textContent = px(effectivePaddingY);
-
-    const effectiveRadius = state.overrides.radius
-      ? state.radius
-      : state.tokens.radius;
-
-    propRadius.value = effectiveRadius;
-    radiusValue.textContent = px(effectiveRadius);
-
-    propFontFamily.value = state.fontFamily;
-
-    propAnimation.value = state.animation;
-
-    propBgColor.value = state.bgColor;
-
-    const effectiveTextColor = state.overrides.textColor
-      ? state.textColor
-      : state.tokens.text;
-
-    propTextColor.value = effectiveTextColor;
-
-    tokenPrimary.value = state.tokens.primary;
-    tokenSecondary.value = state.tokens.secondary;
-    tokenText.value = state.tokens.text;
-
-    tokenRadius.value = state.tokens.radius;
-    tokenRadiusValue.textContent = px(state.tokens.radius);
-
-    tokenSizeSmallFont.value = state.tokens.sizes.small.font;
-    tokenSizeSmallFontValue.textContent = px(state.tokens.sizes.small.font);
-    tokenSizeSmallPadX.value = state.tokens.sizes.small.paddingX;
-    tokenSizeSmallPadXValue.textContent = px(state.tokens.sizes.small.paddingX);
-    tokenSizeSmallPadY.value = state.tokens.sizes.small.paddingY;
-    tokenSizeSmallPadYValue.textContent = px(state.tokens.sizes.small.paddingY);
-
-    tokenSizeMediumFont.value = state.tokens.sizes.medium.font;
-    tokenSizeMediumFontValue.textContent = px(state.tokens.sizes.medium.font);
-    tokenSizeMediumPadX.value = state.tokens.sizes.medium.paddingX;
-    tokenSizeMediumPadXValue.textContent = px(
-      state.tokens.sizes.medium.paddingX,
-    );
-    tokenSizeMediumPadY.value = state.tokens.sizes.medium.paddingY;
-    tokenSizeMediumPadYValue.textContent = px(
-      state.tokens.sizes.medium.paddingY,
-    );
-
-    tokenSizeLargeFont.value = state.tokens.sizes.large.font;
-    tokenSizeLargeFontValue.textContent = px(state.tokens.sizes.large.font);
-    tokenSizeLargePadX.value = state.tokens.sizes.large.paddingX;
-    tokenSizeLargePadXValue.textContent = px(state.tokens.sizes.large.paddingX);
-    tokenSizeLargePadY.value = state.tokens.sizes.large.paddingY;
-    tokenSizeLargePadYValue.textContent = px(state.tokens.sizes.large.paddingY);
-
-    applyTokensToPreview();
-
-    previewArea.innerHTML = "";
-    let el;
-
-    if (state.component === "button") {
-      el = createButton(state);
-    } else if (state.component === "card") {
-      el = createCard(state);
-    } else if (state.component === "header") {
-      el = createHeader(state);
-    } else if (state.component === "badge") {
-      el = createBadge(state);
-    } else if (state.component === "alert") {
-      el = createAlert(state);
-    } else if (state.component === "input") {
-      el = createInput(state);
-    } else if (state.component === "modal") {
-      el = createModal(state);
-    }
-
-    el.style.setProperty("--font-size-base", px(preset.font));
-    el.style.setProperty("--padding-x-base", px(preset.paddingX));
-    el.style.setProperty("--padding-y-base", px(preset.paddingY));
-
-    el.style.setProperty("--font-size-adjust", px(state.fontSizeAdjust));
-    el.style.setProperty("--padding-adjust-x", px(state.paddingXAdjust));
-    el.style.setProperty("--padding-adjust-y", px(state.paddingYAdjust));
-    el.style.fontFamily = state.fontFamily;
-
-    el.classList.remove( //nicht mehr ausgewählte Animationen entfernen
-      "anim-hover-scale",
-      "anim-hover-fade",
-      "anim-hover-lift",
-      "anim-press-scale",
-    );
-
-    if (state.animation !== "none") {
-      el.classList.add(`anim-${state.animation}`);
-    }
-
-    if (state.overrides.radius) {
-      el.style.setProperty("--component-border-radius", px(state.radius)); 
-    } else {
-      el.style.removeProperty("--component-border-radius");
-    }
-
-    if (state.overrides.bgColor) {
-      el.style.setProperty("--component-bg", state.bgColor);
-    } else {
-      el.style.removeProperty("--component-bg");
-    }
-
-    if (state.overrides.textColor) {
-      el.style.setProperty("--component-text", state.textColor);
-    } else {
-      el.style.removeProperty("--component-text");
-    }
-
-    previewArea.appendChild(el);
-
-    updateContrastWarning();
-  }
-
   function exportCSS() {
     const t = state.tokens;
     const preset = getPreset(state.component, state.size);
@@ -673,9 +437,13 @@
       .then(() => alert("JSON copied!"));
   }
 
+  function on(el, type, handler) {
+    el.addEventListener(type, handler);
+  }
+
   function attachListeners() {
     [compSelect, compVariant].forEach((el) =>
-      el.addEventListener("change", () => {
+      on(el, "change", () => {
         state.component = compSelect.value;
         state.variant = compVariant.value;
         recordState();
@@ -683,19 +451,19 @@
       }),
     );
 
-    propText.addEventListener("input", () => {
+    on(propText, "input", () => {
       state.text = propText.value;
       recordState();
       renderFromState();
     });
 
-    propText2.addEventListener("input", () => {
+    on(propText2, "input", () => {
       state.text2 = propText2.value;
       recordState();
       renderFromState();
     });
 
-    propRadius.addEventListener("input", () => {
+    on(propRadius, "input", () => {
       state.radius = propRadius.valueAsNumber;
       state.overrides.radius = true;
       radiusValue.textContent = px(state.radius);
@@ -703,63 +471,57 @@
       renderFromState();
     });
 
-    propFontFamily.addEventListener("input", () => {
+    on(propFontFamily, "input", () => {
       state.fontFamily = propFontFamily.value;
       recordState();
       renderFromState();
     });
 
-    propAnimation.addEventListener("change", () => {
+    on(propAnimation, "change", () => {
       state.animation = propAnimation.value;
       recordState();
       renderFromState();
     });
 
-    propBgColor.addEventListener("input", () => {
+    on(propBgColor, "input", () => {
       state.bgColor = propBgColor.value;
       state.overrides.bgColor = true;
       recordState();
       renderFromState();
     });
 
-    propTextColor.addEventListener("input", () => {
+    on(propTextColor, "input", () => {
       state.textColor = propTextColor.value;
       state.overrides.textColor = true;
       recordState();
       renderFromState();
     });
 
-    propFontSize.addEventListener("input", () => {
+    on(propFontSize, "input", () => {
       const base = getPreset(state.component, state.size).font;
-
       state.fontSizeAdjust = propFontSize.valueAsNumber - base;
       state.overrides.fontSize = true;
-
       recordState();
       renderFromState();
     });
 
-    propPaddingX.addEventListener("input", () => {
+    on(propPaddingX, "input", () => {
       const base = getPreset(state.component, state.size).paddingX;
-
       state.paddingXAdjust = propPaddingX.valueAsNumber - base;
       state.overrides.paddingX = true;
-
       recordState();
       renderFromState();
     });
 
-    propPaddingY.addEventListener("input", () => {
+    on(propPaddingY, "input", () => {
       const base = getPreset(state.component, state.size).paddingY;
-
       state.paddingYAdjust = propPaddingY.valueAsNumber - base;
       state.overrides.paddingY = true;
-
       recordState();
       renderFromState();
     });
 
-    compSize.addEventListener("change", () => {
+    on(compSize, "change", () => {
       state.size = compSize.value;
 
       state.overrides.fontSize = false;
@@ -771,7 +533,6 @@
       state.paddingYAdjust = 0;
 
       const preset = getPreset(state.component, state.size);
-
       propFontSize.value = preset.font;
       propPaddingX.value = preset.paddingX;
       propPaddingY.value = preset.paddingY;
@@ -780,32 +541,32 @@
       renderFromState();
     });
 
-    tokenPrimary.addEventListener("input", () => {
+    on(tokenPrimary, "input", () => {
       state.tokens.primary = tokenPrimary.value;
       recordState();
       renderFromState();
     });
 
-    tokenSecondary.addEventListener("input", () => {
+    on(tokenSecondary, "input", () => {
       state.tokens.secondary = tokenSecondary.value;
       recordState();
       renderFromState();
     });
 
-    tokenText.addEventListener("input", () => {
+    on(tokenText, "input", () => {
       state.tokens.text = tokenText.value;
       recordState();
       renderFromState();
     });
 
-    tokenRadius.addEventListener("input", () => {
+    on(tokenRadius, "input", () => {
       state.tokens.radius = tokenRadius.valueAsNumber;
       tokenRadiusValue.textContent = px(state.tokens.radius);
       recordState();
       renderFromState();
     });
 
-    tokenSizeSmallFont.addEventListener("input", () => {
+    on(tokenSizeSmallFont, "input", () => {
       const v = tokenSizeSmallFont.valueAsNumber;
       state.tokens.sizes.small.font = v;
       tokenSizeSmallFontValue.textContent = px(v);
@@ -813,7 +574,7 @@
       if (!state.overrides.fontSize) renderFromState();
     });
 
-    tokenSizeMediumFont.addEventListener("input", () => {
+    on(tokenSizeMediumFont, "input", () => {
       const v = tokenSizeMediumFont.valueAsNumber;
       state.tokens.sizes.medium.font = v;
       tokenSizeMediumFontValue.textContent = px(v);
@@ -821,7 +582,7 @@
       if (!state.overrides.fontSize) renderFromState();
     });
 
-    tokenSizeLargeFont.addEventListener("input", () => {
+    on(tokenSizeLargeFont, "input", () => {
       const v = tokenSizeLargeFont.valueAsNumber;
       state.tokens.sizes.large.font = v;
       tokenSizeLargeFontValue.textContent = px(v);
@@ -829,66 +590,60 @@
       if (!state.overrides.fontSize) renderFromState();
     });
 
-    tokenSizeSmallPadX.addEventListener("input", () => {
+    on(tokenSizeSmallPadX, "input", () => {
       const v = tokenSizeSmallPadX.valueAsNumber;
       state.tokens.sizes.small.paddingX = v;
       tokenSizeSmallPadXValue.textContent = px(v);
-
       recordState();
       if (!state.overrides.paddingX) renderFromState();
     });
 
-    tokenSizeSmallPadY.addEventListener("input", () => {
+    on(tokenSizeSmallPadY, "input", () => {
       const v = tokenSizeSmallPadY.valueAsNumber;
       state.tokens.sizes.small.paddingY = v;
       tokenSizeSmallPadYValue.textContent = px(v);
-
       recordState();
       if (!state.overrides.paddingY) renderFromState();
     });
 
-    tokenSizeMediumPadX.addEventListener("input", () => {
+    on(tokenSizeMediumPadX, "input", () => {
       const v = tokenSizeMediumPadX.valueAsNumber;
       state.tokens.sizes.medium.paddingX = v;
       tokenSizeMediumPadXValue.textContent = px(v);
-
       recordState();
       if (!state.overrides.paddingX) renderFromState();
     });
 
-    tokenSizeMediumPadY.addEventListener("input", () => {
+    on(tokenSizeMediumPadY, "input", () => {
       const v = tokenSizeMediumPadY.valueAsNumber;
       state.tokens.sizes.medium.paddingY = v;
       tokenSizeMediumPadYValue.textContent = px(v);
-
       recordState();
       if (!state.overrides.paddingY) renderFromState();
     });
 
-    tokenSizeLargePadX.addEventListener("input", () => {
+    on(tokenSizeLargePadX, "input", () => {
       const v = tokenSizeLargePadX.valueAsNumber;
       state.tokens.sizes.large.paddingX = v;
       tokenSizeLargePadXValue.textContent = px(v);
-
       recordState();
       if (!state.overrides.paddingX) renderFromState();
     });
 
-    tokenSizeLargePadY.addEventListener("input", () => {
+    on(tokenSizeLargePadY, "input", () => {
       const v = tokenSizeLargePadY.valueAsNumber;
       state.tokens.sizes.large.paddingY = v;
       tokenSizeLargePadYValue.textContent = px(v);
-
       recordState();
       if (!state.overrides.paddingY) renderFromState();
     });
 
-    exportCSSBtn.addEventListener("click", exportCSS);
-    exportJSONBtn.addEventListener("click", exportJSON);
-    undoBtn.addEventListener("click", undo);
-    redoBtn.addEventListener("click", redo);
+    on(exportCSSBtn, "click", exportCSS);
+    on(exportJSONBtn, "click", exportJSON);
+    on(undoBtn, "click", undo);
+    on(redoBtn, "click", redo);
 
-    resetBtn.addEventListener("click", () => {
+    on(resetBtn, "click", () => {
       const comp = state.component;
       const variant = state.variant;
       const size = state.size;
@@ -917,7 +672,7 @@
       recordState();
     });
 
-    clearAllBtn.addEventListener("click", () => {
+    on(clearAllBtn, "click", () => {
       const confirmed = confirm(
         "Resetting all settings will restore the default configuration and permanently remove all user customizations. Do you wish to continue?",
       );
@@ -925,7 +680,7 @@
 
       localStorage.removeItem(STORAGE_KEY);
 
-      state = { //aktueller Zustand des Konfigurators
+      Object.assign(state, {
         component: "button",
         variant: "primary",
         size: "medium",
@@ -962,7 +717,7 @@
             large: { font: 20, paddingX: 14, paddingY: 14 },
           },
         },
-      };
+      });
 
       history = [deepCopy(state)];
       historyIndex = 0;
