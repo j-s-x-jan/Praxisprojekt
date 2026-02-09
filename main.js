@@ -1,6 +1,7 @@
 import { state } from "./state.js";
 import { renderFromState } from "./render.js";
 import { getPreset } from "./presets.js";
+import { px, deepCopy } from "./utils.js";
 
 (function () {
   const previewArea = document.getElementById("preview-area");
@@ -82,8 +83,6 @@ import { getPreset } from "./presets.js";
   const resetBtn = document.getElementById("reset-btn");
   const clearAllBtn = document.getElementById("clearAllBtn");
 
-  const px = (v) => v + "px";
-  const deepCopy = (o) => JSON.parse(JSON.stringify(o));
   const STORAGE_KEY = "ui-configurator-state-v1"; //lokales speichern im Browser
 
   function mergeDeep(target, source) {
@@ -124,22 +123,6 @@ import { getPreset } from "./presets.js";
     }
   }
 
-  function setRootVar(name, value) {
-    document.documentElement.style.setProperty(name, value);
-  }
-
-  function applyTokensToPreview() {
-    const root = document.getElementById("preview-area");
-    const t = state.tokens;
-
-    root.style.setProperty("--token-primary", t.primary);
-    root.style.setProperty("--token-secondary", t.secondary);
-    root.style.setProperty("--token-text", t.text);
-    root.style.setProperty("--token-border-radius", px(t.radius));
-    root.style.setProperty("--token-on-primary", t.text);
-    root.style.setProperty("--token-on-secondary", t.text);
-  }
-
   let history = []; //für undo und redo
   let historyIndex = -1; // aktueller Zustand
 
@@ -170,54 +153,6 @@ import { getPreset } from "./presets.js";
   function updateUndoRedoButtons() {
     undoBtn.disabled = historyIndex <= 0;
     redoBtn.disabled = historyIndex >= history.length - 1;
-  }
-
-  function hexToRgb(hex) {
-    const h = hex.replace("#", "");
-    if (h.length === 3) {
-      return [
-        parseInt(h[0] + h[0], 16),
-        parseInt(h[1] + h[1], 16),
-        parseInt(h[2] + h[2], 16),
-      ];
-    }
-    return [
-      parseInt(h.slice(0, 2), 16),
-      parseInt(h.slice(2, 4), 16),
-      parseInt(h.slice(4, 6), 16),
-    ];
-  }
-
-  function getLuminance(rgb) {
-    const srgb = rgb
-      .map((v) => v / 255)
-      .map((v) =>
-        v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4),
-      );
-    return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
-  }
-
-  function getContrastRatio(hex1, hex2) {
-    const lum1 = getLuminance(hexToRgb(hex1));
-    const lum2 = getLuminance(hexToRgb(hex2));
-    const brightest = Math.max(lum1, lum2);
-    const darkest = Math.min(lum1, lum2);
-    return (brightest + 0.05) / (darkest + 0.05);
-  }
-
-  function updateContrastWarning() {
-    const warningEl = document.getElementById("contrast-warning");
-    const bg = state.overrides.bgColor ? state.bgColor : state.tokens.primary;
-    const text = state.overrides.textColor
-      ? state.textColor
-      : state.tokens.text;
-    const ratio = getContrastRatio(bg, text);
-
-    if (ratio < 2.5) {
-      warningEl.textContent = `⚠️ Low contrast between text and background. Text may be hard to read.`;
-    } else {
-      warningEl.textContent = "";
-    }
   }
 
   function exportCSS() {

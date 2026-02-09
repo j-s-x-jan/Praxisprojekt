@@ -1,115 +1,125 @@
 import { state } from "./state.js";
 
 export function createButton({ text, variant, size }) {
-  const btn = document.createElement("button");
-  btn.className = `preview-button preview-component ${variant} size-${size}`;
-  btn.textContent = text || "Text";
-  return btn;
-}
+    const btn = document.createElement("button");
+    btn.className = `preview-button preview-component ${variant} size-${size}`;
+    btn.textContent = text || "Text";
+    return btn;
+  }
 
-export function createCard({ variant, size } = {}) {
-  const titleText = state.text && state.text.trim() ? state.text : "Title";
-  const contentText = state.text2 && state.text2.trim() ? state.text2 : "Example content";
+  export function createCard({ variant, size } = {}) {
+    const titleText =
+      state.text && state.text.trim().length > 0 ? state.text : "Title";
 
-  const cardEl = document.createElement("div");
-  cardEl.className = `preview-card preview-component ${variant} size-${size}`;
+    const contentText =
+      state.text2 && state.text2.trim().length > 0
+        ? state.text2
+        : "Example content";
 
-  const h = document.createElement("h3");
-  h.textContent = titleText;
+    const cardEl = document.createElement("div");
+    cardEl.className = `preview-card preview-component ${variant} size-${size}`;
 
-  const p = document.createElement("p");
-  p.textContent = contentText;
+    const h = document.createElement("h3");
+    h.textContent = titleText;
 
-  cardEl.append(h, p);
-  return cardEl;
-}
+    const p = document.createElement("p");
+    p.textContent = contentText;
 
-export function createHeader({ text, variant, size }) {
-  const h = document.createElement("header");
-  h.className = `preview-header preview-component ${variant} size-${size}`;
-  h.textContent = text || "Heading";
-  return h;
-}
+    cardEl.append(h, p);
+    return cardEl;
+  }
 
-export function createBadge({ text, variant, size }) {
-  const badge = document.createElement("span");
-  badge.className = `preview-badge preview-component ${variant} size-${size}`;
-  badge.textContent = text || "Badge";
-  return badge;
-}
+  export function createHeader({ text, variant, size }) {
+    const h = document.createElement("header");
+    h.className = `preview-header preview-component ${variant} size-${size}`;
+    h.textContent = text || "Heading";
+    return h;
+  }
 
-export function createAlert({ text, variant, size }) {
-  const alert = document.createElement("div");
-  alert.className = `preview-alert preview-component ${variant} size-${size}`;
-  alert.textContent = text || "Alert message";
-  return alert;
-}
+  export function createBadge({ text, variant, size }) {
+    const badge = document.createElement("span");
+    badge.className = `preview-badge preview-component ${variant} size-${size}`;
+    badge.textContent = text || "Badge";
+    return badge;
+  }
 
-export function createInput({ variant, size } = {}) {
-  const container = document.createElement("div");
-  container.className = `preview-input preview-component ${variant} size-${size}`;
+  export function createAlert({ text, variant, size }) {
+    const alert = document.createElement("div");
+    alert.className = `preview-alert preview-component ${variant} size-${size}`;
+    alert.textContent = text || "Alert message";
+    return alert;
+  }
 
-  const wrap = document.createElement("div");
-  wrap.className = "input-wrap";
+  export function createInput({ variant, size } = {}) {
+    const value = state.text ?? "";
+    const container = document.createElement("div");
+    container.className = `preview-input preview-component ${variant} size-${size}`;
 
-  const input = document.createElement("input");
-  input.type = "text";
-  input.placeholder = "Type...";
-  input.value = state.text ?? "";
-  input.autocomplete = "off";
+    const wrap = document.createElement("div");
+    wrap.className = "input-wrap";
 
-  // nur state ändern
-  input.addEventListener("input", (e) => {
-    state.text = e.target.value;
-  });
+    const input = document.createElement("input");
+    input.type = "text";
+    input.placeholder = "Type...";
+    input.value = value;
+    input.autocomplete = "off";
 
-  wrap.appendChild(input);
-  container.appendChild(wrap);
-  return container;
-}
+    input.addEventListener("input", (e) => {
+      state.text = e.target.value;
+      if (propText) propText.value = state.text;
+    });
 
-export function createModal({ variant, size } = {}) {
-  const titleText = state.text && state.text.trim() ? state.text : "Title";
-  const bodyText = state.text2 && state.text2.trim() ? state.text2 : "Modal content";
+    wrap.appendChild(input);
+    container.appendChild(wrap);
+    return container;
+  }
 
-  const modal = document.createElement("div");
-  modal.className = `preview-modal preview-component ${variant} size-${size}`;
+  export function createModal({ variant, size } = {}) {
+    const titleText =
+      state.text && state.text.trim().length > 0 ? state.text : "Title";
+    const bodyText =
+      state.text2 && state.text2.trim().length > 0
+        ? state.text2
+        : "Modal content";
 
-  const h = document.createElement("h3");
-  h.textContent = titleText;
+    const modal = document.createElement("div");
+    modal.className = `preview-modal preview-component ${variant} size-${size}`;
 
-  const bodyWrap = document.createElement("div");
-  bodyWrap.className = "modal-body";
+    const h = document.createElement("h3");
+    h.textContent = titleText;
 
-  const textarea = document.createElement("textarea");
-  textarea.value = bodyText;
-  textarea.placeholder = "Enter details...";
+    const bodyWrap = document.createElement("div");
+    bodyWrap.className = "modal-body";
 
-  // nur state ändern
-  textarea.addEventListener("input", (e) => {
-    state.text2 = e.target.value;
-  });
+    const textarea = document.createElement("textarea");
+    textarea.value = bodyText;
+    textarea.placeholder = "Enter details...";
 
-  bodyWrap.appendChild(textarea);
+    textarea.addEventListener("input", (e) => {
+      state.text2 = e.target.value;
+      if (propText2) propText2.value = state.text2;
+    });
 
-  const actions = document.createElement("div");
-  actions.style.display = "flex";
-  actions.style.gap = "8px";
-  actions.style.justifyContent = "flex-end";
-  actions.style.marginTop = "8px";
+    bodyWrap.appendChild(textarea);
 
-  const cancel = document.createElement("button");
-  cancel.textContent = "Cancel";
-  cancel.className = `preview-button ${variant} size-${size}`;
-  cancel.addEventListener("click", () => {});
+    const actions = document.createElement("div");
+    actions.style.display = "flex";
+    actions.style.gap = "8px";
+    actions.style.justifyContent = "flex-end";
+    actions.style.marginTop = "8px";
 
-  const ok = document.createElement("button");
-  ok.textContent = "OK";
-  ok.className = `preview-button ${variant} size-${size}`;
-  ok.addEventListener("click", () => {});
+    const cancel = document.createElement("button");
+    cancel.textContent = "Cancel";
+    cancel.className = `preview-button ${variant} size-${size}`;
+    cancel.addEventListener("click", () => {});
 
-  actions.append(cancel, ok);
+    const ok = document.createElement("button");
+    ok.textContent = "OK";
+    ok.className = `preview-button ${variant} size-${size}`;
+    ok.addEventListener("click", () => {});
 
-  modal.append(h, bodyWrap, actions);
-  return modal;
-}
+    actions.append(cancel, ok);
+
+    modal.append(h, bodyWrap, actions);
+    return modal;
+  }

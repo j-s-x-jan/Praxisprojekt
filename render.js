@@ -1,6 +1,15 @@
 import { state } from "./state.js";
-import { createButton, createCard, createHeader, createBadge, createAlert, createInput, createModal } from "./components.js";
+import {
+  createButton,
+  createCard,
+  createHeader,
+  createBadge,
+  createAlert,
+  createInput,
+  createModal,
+} from "./components.js";
 import { getPreset } from "./presets.js";
+import { px } from "./utils.js";
 
 const previewArea = document.getElementById("preview-area");
 const compSelect = document.getElementById("component-select");
@@ -27,23 +36,101 @@ const tokenText = document.getElementById("token-text-color");
 const tokenRadius = document.getElementById("token-border-radius");
 const tokenRadiusValue = document.getElementById("token-border-radius-value");
 const tokenSizeSmallFont = document.getElementById("token-size-small-font");
-const tokenSizeSmallFontValue = document.getElementById("token-size-small-font-value");
+const tokenSizeSmallFontValue = document.getElementById(
+  "token-size-small-font-value",
+);
 const tokenSizeSmallPadX = document.getElementById("token-size-small-pad-x");
-const tokenSizeSmallPadXValue = document.getElementById("token-size-small-pad-x-value");
+const tokenSizeSmallPadXValue = document.getElementById(
+  "token-size-small-pad-x-value",
+);
 const tokenSizeSmallPadY = document.getElementById("token-size-small-pad-y");
-const tokenSizeSmallPadYValue = document.getElementById("token-size-small-pad-y-value");
+const tokenSizeSmallPadYValue = document.getElementById(
+  "token-size-small-pad-y-value",
+);
 const tokenSizeMediumFont = document.getElementById("token-size-medium-font");
-const tokenSizeMediumFontValue = document.getElementById("token-size-medium-font-value");
+const tokenSizeMediumFontValue = document.getElementById(
+  "token-size-medium-font-value",
+);
 const tokenSizeMediumPadX = document.getElementById("token-size-medium-pad-x");
-const tokenSizeMediumPadXValue = document.getElementById("token-size-medium-pad-x-value");
+const tokenSizeMediumPadXValue = document.getElementById(
+  "token-size-medium-pad-x-value",
+);
 const tokenSizeMediumPadY = document.getElementById("token-size-medium-pad-y");
-const tokenSizeMediumPadYValue = document.getElementById("token-size-medium-pad-y-value");
+const tokenSizeMediumPadYValue = document.getElementById(
+  "token-size-medium-pad-y-value",
+);
 const tokenSizeLargeFont = document.getElementById("token-size-large-font");
-const tokenSizeLargeFontValue = document.getElementById("token-size-large-font-value");
+const tokenSizeLargeFontValue = document.getElementById(
+  "token-size-large-font-value",
+);
 const tokenSizeLargePadX = document.getElementById("token-size-large-pad-x");
-const tokenSizeLargePadXValue = document.getElementById("token-size-large-pad-x-value");
+const tokenSizeLargePadXValue = document.getElementById(
+  "token-size-large-pad-x-value",
+);
 const tokenSizeLargePadY = document.getElementById("token-size-large-pad-y");
-const tokenSizeLargePadYValue = document.getElementById("token-size-large-pad-y-value");
+const tokenSizeLargePadYValue = document.getElementById(
+  "token-size-large-pad-y-value",
+);
+
+function applyTokensToPreview() {
+  const root = document.getElementById("preview-area");
+  if (!root) return;
+  const t = state.tokens;
+
+  root.style.setProperty("--token-primary", t.primary);
+  root.style.setProperty("--token-secondary", t.secondary);
+  root.style.setProperty("--token-text", t.text);
+  root.style.setProperty("--token-border-radius", px(t.radius));
+  root.style.setProperty("--token-on-primary", t.text);
+  root.style.setProperty("--token-on-secondary", t.text);
+}
+
+function hexToRgb(hex) {
+  const h = hex.replace("#", "");
+  if (h.length === 3) {
+    return [
+      parseInt(h[0] + h[0], 16),
+      parseInt(h[1] + h[1], 16),
+      parseInt(h[2] + h[2], 16),
+    ];
+  }
+  return [
+    parseInt(h.slice(0, 2), 16),
+    parseInt(h.slice(2, 4), 16),
+    parseInt(h.slice(4, 6), 16),
+  ];
+}
+
+function getLuminance(rgb) {
+  const srgb = rgb
+    .map((v) => v / 255)
+    .map((v) =>
+      v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4),
+    );
+  return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+}
+
+function getContrastRatio(hex1, hex2) {
+  const lum1 = getLuminance(hexToRgb(hex1));
+  const lum2 = getLuminance(hexToRgb(hex2));
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return (brightest + 0.05) / (darkest + 0.05);
+}
+
+function updateContrastWarning() {
+  const warningEl = document.getElementById("contrast-warning");
+  if (!warningEl) return;
+  const bg = state.overrides.bgColor ? state.bgColor : state.tokens.primary;
+  const text = state.overrides.textColor ? state.textColor : state.tokens.text;
+  const ratio = getContrastRatio(bg, text);
+
+  if (ratio < 2.5) {
+    warningEl.textContent = `⚠️ Low contrast between text and background. Text may be hard to read.`;
+  } else {
+    warningEl.textContent = "";
+  }
+}
 
 export function renderFromState() {
   compSelect.value = state.component;
