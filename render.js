@@ -85,7 +85,8 @@ function applyTokensToPreview() {
   root.style.setProperty("--token-on-secondary", t.text);
 }
 
-function hexToRgb(hex) {
+//Funktionen für Kontrastwarnung
+function hexToRgb(hex) { 
   const h = hex.replace("#", "");
   if (h.length === 3) {
     return [
@@ -227,7 +228,7 @@ export function renderFromState() {
   previewArea.innerHTML = "";
   let el;
 
-  if (state.component === "button") {
+  if (state.component === "button") { //Auswahl der Komponente
     el = createButton(state);
   } else if (state.component === "card") {
     el = createCard(state);
@@ -264,7 +265,7 @@ export function renderFromState() {
     el.classList.add(`anim-${state.animation}`);
   }
 
-  if (state.overrides.radius) {
+  if (state.overrides.radius) { //Properties überschreiben Design Tokens, wenn Properties gesetzt werden
     el.style.setProperty("--component-border-radius", px(state.radius));
   } else {
     el.style.removeProperty("--component-border-radius");

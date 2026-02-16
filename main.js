@@ -159,14 +159,14 @@ import { px, deepCopy } from "./utils.js";
     const t = state.tokens;
     const preset = getPreset(state.component, state.size);
 
-    const computedFontSize = (preset.font || 0) + (state.fontSizeAdjust || 0);
+    const computedFontSize = (preset.font || 0) + (state.fontSizeAdjust || 0); //aktuelle Schriftgröße berechnen
     const computedPaddingX =
       (preset.paddingX || 0) + (state.paddingXAdjust || 0);
     const computedPaddingY =
       (preset.paddingY || 0) + (state.paddingYAdjust || 0);
 
     let css = ":root {\n";
-    css += `  --token-primary: ${t.primary};\n`;
+    css += `  --token-primary: ${t.primary};\n`; //Eigenschaften anzeigen
     css += `  --token-secondary: ${t.secondary};\n`;
     css += `  --token-text: ${t.text};\n`;
     css += `  --token-border-radius: ${t.radius}px;\n`;
@@ -227,9 +227,9 @@ import { px, deepCopy } from "./utils.js";
       fontSize: computedFontSize + "px",
       padding: {
         x: {
-          base: preset.paddingX,
-          adjust: state.paddingXAdjust || 0,
-          value: computedPaddingX,
+          base: preset.paddingX, //Standardwert
+          adjust: state.paddingXAdjust || 0, //Anpassung
+          value: computedPaddingX, //Aktueller Wert
         },
         y: {
           base: preset.paddingY,
@@ -252,7 +252,7 @@ import { px, deepCopy } from "./utils.js";
     el.addEventListener(type, handler);
   }
 
-  function attachListeners() {
+  function attachListeners() { //eventListener für alle Eingabemethoden
     [compSelect, compVariant].forEach((el) =>
       on(el, "change", () => {
         state.component = compSelect.value;
